@@ -1,5 +1,5 @@
-kubectl create namespace clt-devops
 ## Jenkins reference: https://twofootdog.tistory.com/11
+kubectl create namespace clt-devops
 JENKINS=./cicd/jenkins
 
 # create RBAC

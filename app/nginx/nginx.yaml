@@ -1,0 +1,16 @@
+apiVersion: extensions/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  namespace: pandora-gateway
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: node1
+    http:
+      paths:
+      - path: /argo
+        backend:
+          serviceName: argocd-server
+          servicePort: 80

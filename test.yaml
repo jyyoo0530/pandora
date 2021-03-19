@@ -1,2726 +1,745 @@
-# This is an auto-generated file. DO NOT EDIT
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  labels:
-    app.kubernetes.io/name: applications.argoproj.io
-    app.kubernetes.io/part-of: argocd
-  name: applications.argoproj.io
-spec:
-  additionalPrinterColumns:
-    - JSONPath: .status.sync.status
-      name: Sync Status
-      type: string
-    - JSONPath: .status.health.status
-      name: Health Status
-      type: string
-    - JSONPath: .status.sync.revision
-      name: Revision
-      priority: 10
-      type: string
-  group: argoproj.io
-  names:
-    kind: Application
-    listKind: ApplicationList
-    plural: applications
-    shortNames:
-      - app
-      - apps
-    singular: application
-  scope: Namespaced
-  subresources: {}
-  validation:
-    openAPIV3Schema:
-      description: Application is a definition of Application resource.
-      properties:
-        apiVersion:
-          description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
-          type: string
-        kind:
-          description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-          type: string
-        metadata:
-          type: object
-        operation:
-          description: Operation contains requested operation parameters.
-          properties:
-            info:
-              items:
-                properties:
-                  name:
-                    type: string
-                  value:
-                    type: string
-                required:
-                  - name
-                  - value
-                type: object
-              type: array
-            initiatedBy:
-              description: OperationInitiator holds information about the operation initiator
-              properties:
-                automated:
-                  description: Automated is set to true if operation was initiated automatically by the application controller.
-                  type: boolean
-                username:
-                  description: Name of a user who started operation.
-                  type: string
-              type: object
-            retry:
-              description: Retry controls failed sync retry behavior
-              properties:
-                backoff:
-                  description: Backoff is a backoff strategy
-                  properties:
-                    duration:
-                      description: Duration is the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
-                      type: string
-                    factor:
-                      description: Factor is a factor to multiply the base duration after each failed retry
-                      format: int64
-                      type: integer
-                    maxDuration:
-                      description: MaxDuration is the maximum amount of time allowed for the backoff strategy
-                      type: string
-                  type: object
-                limit:
-                  description: Limit is the maximum number of attempts when retrying a container
-                  format: int64
-                  type: integer
-              type: object
-            sync:
-              description: SyncOperation contains sync operation details.
-              properties:
-                dryRun:
-                  description: DryRun will perform a `kubectl apply --dry-run` without actually performing the sync
-                  type: boolean
-                manifests:
-                  description: Manifests is an optional field that overrides sync source with a local directory for development
-                  items:
-                    type: string
-                  type: array
-                prune:
-                  description: Prune deletes resources that are no longer tracked in git
-                  type: boolean
-                resources:
-                  description: Resources describes which resources to sync
-                  items:
-                    description: SyncOperationResource contains resources to sync.
-                    properties:
-                      group:
-                        type: string
-                      kind:
-                        type: string
-                      name:
-                        type: string
-                      namespace:
-                        type: string
-                    required:
-                      - kind
-                      - name
-                    type: object
-                  type: array
-                revision:
-                  description: Revision is the revision in which to sync the application to. If omitted, will use the revision specified in app spec.
-                  type: string
-                source:
-                  description: Source overrides the source definition set in the application. This is typically set in a Rollback operation and nil during a Sync operation
-                  properties:
-                    chart:
-                      description: Chart is a Helm chart name
-                      type: string
-                    directory:
-                      description: Directory holds path/directory specific options
-                      properties:
-                        exclude:
-                          type: string
-                        jsonnet:
-                          description: ApplicationSourceJsonnet holds jsonnet specific options
-                          properties:
-                            extVars:
-                              description: ExtVars is a list of Jsonnet External Variables
-                              items:
-                                description: JsonnetVar is a jsonnet variable
-                                properties:
-                                  code:
-                                    type: boolean
-                                  name:
-                                    type: string
-                                  value:
-                                    type: string
-                                required:
-                                  - name
-                                  - value
-                                type: object
-                              type: array
-                            libs:
-                              description: Additional library search dirs
-                              items:
-                                type: string
-                              type: array
-                            tlas:
-                              description: TLAS is a list of Jsonnet Top-level Arguments
-                              items:
-                                description: JsonnetVar is a jsonnet variable
-                                properties:
-                                  code:
-                                    type: boolean
-                                  name:
-                                    type: string
-                                  value:
-                                    type: string
-                                required:
-                                  - name
-                                  - value
-                                type: object
-                              type: array
-                          type: object
-                        recurse:
-                          type: boolean
-                      type: object
-                    helm:
-                      description: Helm holds helm specific options
-                      properties:
-                        fileParameters:
-                          description: FileParameters are file parameters to the helm template
-                          items:
-                            description: HelmFileParameter is a file parameter to a helm template
-                            properties:
-                              name:
-                                description: Name is the name of the helm parameter
-                                type: string
-                              path:
-                                description: Path is the path value for the helm parameter
-                                type: string
-                            type: object
-                          type: array
-                        parameters:
-                          description: Parameters are parameters to the helm template
-                          items:
-                            description: HelmParameter is a parameter to a helm template
-                            properties:
-                              forceString:
-                                description: ForceString determines whether to tell Helm to interpret booleans and numbers as strings
-                                type: boolean
-                              name:
-                                description: Name is the name of the helm parameter
-                                type: string
-                              value:
-                                description: Value is the value for the helm parameter
-                                type: string
-                            type: object
-                          type: array
-                        releaseName:
-                          description: The Helm release name. If omitted it will use the application name
-                          type: string
-                        valueFiles:
-                          description: ValuesFiles is a list of Helm value files to use when generating a template
-                          items:
-                            type: string
-                          type: array
-                        values:
-                          description: Values is Helm values, typically defined as a block
-                          type: string
-                        version:
-                          description: Version is the Helm version to use for templating with
-                          type: string
-                      type: object
-                    ksonnet:
-                      description: Ksonnet holds ksonnet specific options
-                      properties:
-                        environment:
-                          description: Environment is a ksonnet application environment name
-                          type: string
-                        parameters:
-                          description: Parameters are a list of ksonnet component parameter override values
-                          items:
-                            description: KsonnetParameter is a ksonnet component parameter
-                            properties:
-                              component:
-                                type: string
-                              name:
-                                type: string
-                              value:
-                                type: string
-                            required:
-                              - name
-                              - value
-                            type: object
-                          type: array
-                      type: object
-                    kustomize:
-                      description: Kustomize holds kustomize specific options
-                      properties:
-                        commonAnnotations:
-                          additionalProperties:
-                            type: string
-                          description: CommonAnnotations adds additional kustomize commonAnnotations
-                          type: object
-                        commonLabels:
-                          additionalProperties:
-                            type: string
-                          description: CommonLabels adds additional kustomize commonLabels
-                          type: object
-                        images:
-                          description: Images are kustomize image overrides
-                          items:
-                            type: string
-                          type: array
-                        namePrefix:
-                          description: NamePrefix is a prefix appended to resources for kustomize apps
-                          type: string
-                        nameSuffix:
-                          description: NameSuffix is a suffix appended to resources for kustomize apps
-                          type: string
-                        version:
-                          description: Version contains optional Kustomize version
-                          type: string
-                      type: object
-                    path:
-                      description: Path is a directory path within the Git repository
-                      type: string
-                    plugin:
-                      description: ConfigManagementPlugin holds config management plugin specific options
-                      properties:
-                        env:
-                          items:
-                            properties:
-                              name:
-                                description: the name, usually uppercase
-                                type: string
-                              value:
-                                description: the value
-                                type: string
-                            required:
-                              - name
-                              - value
-                            type: object
-                          type: array
-                        name:
-                          type: string
-                      type: object
-                    repoURL:
-                      description: RepoURL is the repository URL of the application manifests
-                      type: string
-                    targetRevision:
-                      description: TargetRevision defines the commit, tag, or branch in which to sync the application to. If omitted, will sync to HEAD
-                      type: string
-                  required:
-                    - repoURL
-                  type: object
-                syncOptions:
-                  description: SyncOptions provide per-sync sync-options, e.g. Validate=false
-                  items:
-                    type: string
-                  type: array
-                syncStrategy:
-                  description: SyncStrategy describes how to perform the sync
-                  properties:
-                    apply:
-                      description: Apply will perform a `kubectl apply` to perform the sync.
-                      properties:
-                        force:
-                          description: Force indicates whether or not to supply the --force flag to `kubectl apply`. The --force flag deletes and re-create the resource, when PATCH encounters conflict and has retried for 5 times.
-                          type: boolean
-                      type: object
-                    hook:
-                      description: Hook will submit any referenced resources to perform the sync. This is the default strategy
-                      properties:
-                        force:
-                          description: Force indicates whether or not to supply the --force flag to `kubectl apply`. The --force flag deletes and re-create the resource, when PATCH encounters conflict and has retried for 5 times.
-                          type: boolean
-                      type: object
-                  type: object
-              type: object
-          type: object
-        spec:
-          description: ApplicationSpec represents desired application state. Contains link to repository with application definition and additional parameters link definition revision.
-          properties:
-            destination:
-              description: Destination overrides the kubernetes server and namespace defined in the environment ksonnet app.yaml
-              properties:
-                name:
-                  description: Name of the destination cluster which can be used instead of server (url) field
-                  type: string
-                namespace:
-                  description: Namespace overrides the environment namespace value in the ksonnet app.yaml
-                  type: string
-                server:
-                  description: Server overrides the environment server value in the ksonnet app.yaml
-                  type: string
-              type: object
-            ignoreDifferences:
-              description: IgnoreDifferences controls resources fields which should be ignored during comparison
-              items:
-                description: ResourceIgnoreDifferences contains resource filter and list of json paths which should be ignored during comparison with live state.
-                properties:
-                  group:
-                    type: string
-                  jsonPointers:
-                    items:
-                      type: string
-                    type: array
-                  kind:
-                    type: string
-                  name:
-                    type: string
-                  namespace:
-                    type: string
-                required:
-                  - jsonPointers
-                  - kind
-                type: object
-              type: array
-            info:
-              description: Infos contains a list of useful information (URLs, email addresses, and plain text) that relates to the application
-              items:
-                properties:
-                  name:
-                    type: string
-                  value:
-                    type: string
-                required:
-                  - name
-                  - value
-                type: object
-              type: array
-            project:
-              description: Project is a application project name. Empty name means that application belongs to 'default' project.
-              type: string
-            revisionHistoryLimit:
-              description: This limits this number of items kept in the apps revision history. This should only be changed in exceptional circumstances. Setting to zero will store no history. This will reduce storage used. Increasing will increase the space used to store the history, so we do not recommend increasing it. Default is 10.
-              format: int64
-              type: integer
-            source:
-              description: Source is a reference to the location ksonnet application definition
-              properties:
-                chart:
-                  description: Chart is a Helm chart name
-                  type: string
-                directory:
-                  description: Directory holds path/directory specific options
-                  properties:
-                    exclude:
-                      type: string
-                    jsonnet:
-                      description: ApplicationSourceJsonnet holds jsonnet specific options
-                      properties:
-                        extVars:
-                          description: ExtVars is a list of Jsonnet External Variables
-                          items:
-                            description: JsonnetVar is a jsonnet variable
-                            properties:
-                              code:
-                                type: boolean
-                              name:
-                                type: string
-                              value:
-                                type: string
-                            required:
-                              - name
-                              - value
-                            type: object
-                          type: array
-                        libs:
-                          description: Additional library search dirs
-                          items:
-                            type: string
-                          type: array
-                        tlas:
-                          description: TLAS is a list of Jsonnet Top-level Arguments
-                          items:
-                            description: JsonnetVar is a jsonnet variable
-                            properties:
-                              code:
-                                type: boolean
-                              name:
-                                type: string
-                              value:
-                                type: string
-                            required:
-                              - name
-                              - value
-                            type: object
-                          type: array
-                      type: object
-                    recurse:
-                      type: boolean
-                  type: object
-                helm:
-                  description: Helm holds helm specific options
-                  properties:
-                    fileParameters:
-                      description: FileParameters are file parameters to the helm template
-                      items:
-                        description: HelmFileParameter is a file parameter to a helm template
-                        properties:
-                          name:
-                            description: Name is the name of the helm parameter
-                            type: string
-                          path:
-                            description: Path is the path value for the helm parameter
-                            type: string
-                        type: object
-                      type: array
-                    parameters:
-                      description: Parameters are parameters to the helm template
-                      items:
-                        description: HelmParameter is a parameter to a helm template
-                        properties:
-                          forceString:
-                            description: ForceString determines whether to tell Helm to interpret booleans and numbers as strings
-                            type: boolean
-                          name:
-                            description: Name is the name of the helm parameter
-                            type: string
-                          value:
-                            description: Value is the value for the helm parameter
-                            type: string
-                        type: object
-                      type: array
-                    releaseName:
-                      description: The Helm release name. If omitted it will use the application name
-                      type: string
-                    valueFiles:
-                      description: ValuesFiles is a list of Helm value files to use when generating a template
-                      items:
-                        type: string
-                      type: array
-                    values:
-                      description: Values is Helm values, typically defined as a block
-                      type: string
-                    version:
-                      description: Version is the Helm version to use for templating with
-                      type: string
-                  type: object
-                ksonnet:
-                  description: Ksonnet holds ksonnet specific options
-                  properties:
-                    environment:
-                      description: Environment is a ksonnet application environment name
-                      type: string
-                    parameters:
-                      description: Parameters are a list of ksonnet component parameter override values
-                      items:
-                        description: KsonnetParameter is a ksonnet component parameter
-                        properties:
-                          component:
-                            type: string
-                          name:
-                            type: string
-                          value:
-                            type: string
-                        required:
-                          - name
-                          - value
-                        type: object
-                      type: array
-                  type: object
-                kustomize:
-                  description: Kustomize holds kustomize specific options
-                  properties:
-                    commonAnnotations:
-                      additionalProperties:
-                        type: string
-                      description: CommonAnnotations adds additional kustomize commonAnnotations
-                      type: object
-                    commonLabels:
-                      additionalProperties:
-                        type: string
-                      description: CommonLabels adds additional kustomize commonLabels
-                      type: object
-                    images:
-                      description: Images are kustomize image overrides
-                      items:
-                        type: string
-                      type: array
-                    namePrefix:
-                      description: NamePrefix is a prefix appended to resources for kustomize apps
-                      type: string
-                    nameSuffix:
-                      description: NameSuffix is a suffix appended to resources for kustomize apps
-                      type: string
-                    version:
-                      description: Version contains optional Kustomize version
-                      type: string
-                  type: object
-                path:
-                  description: Path is a directory path within the Git repository
-                  type: string
-                plugin:
-                  description: ConfigManagementPlugin holds config management plugin specific options
-                  properties:
-                    env:
-                      items:
-                        properties:
-                          name:
-                            description: the name, usually uppercase
-                            type: string
-                          value:
-                            description: the value
-                            type: string
-                        required:
-                          - name
-                          - value
-                        type: object
-                      type: array
-                    name:
-                      type: string
-                  type: object
-                repoURL:
-                  description: RepoURL is the repository URL of the application manifests
-                  type: string
-                targetRevision:
-                  description: TargetRevision defines the commit, tag, or branch in which to sync the application to. If omitted, will sync to HEAD
-                  type: string
-              required:
-                - repoURL
-              type: object
-            syncPolicy:
-              description: SyncPolicy controls when a sync will be performed
-              properties:
-                automated:
-                  description: Automated will keep an application synced to the target revision
-                  properties:
-                    allowEmpty:
-                      description: 'AllowEmpty allows apps have zero live resources (default: false)'
-                      type: boolean
-                    prune:
-                      description: 'Prune will prune resources automatically as part of automated sync (default: false)'
-                      type: boolean
-                    selfHeal:
-                      description: 'SelfHeal enables auto-syncing if  (default: false)'
-                      type: boolean
-                  type: object
-                retry:
-                  description: Retry controls failed sync retry behavior
-                  properties:
-                    backoff:
-                      description: Backoff is a backoff strategy
-                      properties:
-                        duration:
-                          description: Duration is the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
-                          type: string
-                        factor:
-                          description: Factor is a factor to multiply the base duration after each failed retry
-                          format: int64
-                          type: integer
-                        maxDuration:
-                          description: MaxDuration is the maximum amount of time allowed for the backoff strategy
-                          type: string
-                      type: object
-                    limit:
-                      description: Limit is the maximum number of attempts when retrying a container
-                      format: int64
-                      type: integer
-                  type: object
-                syncOptions:
-                  description: Options allow you to specify whole app sync-options
-                  items:
-                    type: string
-                  type: array
-              type: object
-          required:
-            - destination
-            - project
-            - source
-          type: object
-        status:
-          description: ApplicationStatus contains information about application sync, health status
-          properties:
-            conditions:
-              items:
-                description: ApplicationCondition contains details about current application condition
-                properties:
-                  lastTransitionTime:
-                    description: LastTransitionTime is the time the condition was first observed.
-                    format: date-time
-                    type: string
-                  message:
-                    description: Message contains human-readable message indicating details about condition
-                    type: string
-                  type:
-                    description: Type is an application condition type
-                    type: string
-                required:
-                  - message
-                  - type
-                type: object
-              type: array
-            health:
-              properties:
-                message:
-                  type: string
-                status:
-                  description: Represents resource health status
-                  type: string
-              type: object
-            history:
-              description: RevisionHistories is a array of history, oldest first and newest last
-              items:
-                description: RevisionHistory contains information relevant to an application deployment
-                properties:
-                  deployStartedAt:
-                    description: DeployStartedAt holds the time the deployment started
-                    format: date-time
-                    type: string
-                  deployedAt:
-                    description: DeployedAt holds the time the deployment completed
-                    format: date-time
-                    type: string
-                  id:
-                    description: ID is an auto incrementing identifier of the RevisionHistory
-                    format: int64
-                    type: integer
-                  revision:
-                    description: Revision holds the revision of the sync
-                    type: string
-                  source:
-                    description: ApplicationSource contains information about github repository, path within repository and target application environment.
-                    properties:
-                      chart:
-                        description: Chart is a Helm chart name
-                        type: string
-                      directory:
-                        description: Directory holds path/directory specific options
-                        properties:
-                          exclude:
-                            type: string
-                          jsonnet:
-                            description: ApplicationSourceJsonnet holds jsonnet specific options
-                            properties:
-                              extVars:
-                                description: ExtVars is a list of Jsonnet External Variables
-                                items:
-                                  description: JsonnetVar is a jsonnet variable
-                                  properties:
-                                    code:
-                                      type: boolean
-                                    name:
-                                      type: string
-                                    value:
-                                      type: string
-                                  required:
-                                    - name
-                                    - value
-                                  type: object
-                                type: array
-                              libs:
-                                description: Additional library search dirs
-                                items:
-                                  type: string
-                                type: array
-                              tlas:
-                                description: TLAS is a list of Jsonnet Top-level Arguments
-                                items:
-                                  description: JsonnetVar is a jsonnet variable
-                                  properties:
-                                    code:
-                                      type: boolean
-                                    name:
-                                      type: string
-                                    value:
-                                      type: string
-                                  required:
-                                    - name
-                                    - value
-                                  type: object
-                                type: array
-                            type: object
-                          recurse:
-                            type: boolean
-                        type: object
-                      helm:
-                        description: Helm holds helm specific options
-                        properties:
-                          fileParameters:
-                            description: FileParameters are file parameters to the helm template
-                            items:
-                              description: HelmFileParameter is a file parameter to a helm template
-                              properties:
-                                name:
-                                  description: Name is the name of the helm parameter
-                                  type: string
-                                path:
-                                  description: Path is the path value for the helm parameter
-                                  type: string
-                              type: object
-                            type: array
-                          parameters:
-                            description: Parameters are parameters to the helm template
-                            items:
-                              description: HelmParameter is a parameter to a helm template
-                              properties:
-                                forceString:
-                                  description: ForceString determines whether to tell Helm to interpret booleans and numbers as strings
-                                  type: boolean
-                                name:
-                                  description: Name is the name of the helm parameter
-                                  type: string
-                                value:
-                                  description: Value is the value for the helm parameter
-                                  type: string
-                              type: object
-                            type: array
-                          releaseName:
-                            description: The Helm release name. If omitted it will use the application name
-                            type: string
-                          valueFiles:
-                            description: ValuesFiles is a list of Helm value files to use when generating a template
-                            items:
-                              type: string
-                            type: array
-                          values:
-                            description: Values is Helm values, typically defined as a block
-                            type: string
-                          version:
-                            description: Version is the Helm version to use for templating with
-                            type: string
-                        type: object
-                      ksonnet:
-                        description: Ksonnet holds ksonnet specific options
-                        properties:
-                          environment:
-                            description: Environment is a ksonnet application environment name
-                            type: string
-                          parameters:
-                            description: Parameters are a list of ksonnet component parameter override values
-                            items:
-                              description: KsonnetParameter is a ksonnet component parameter
-                              properties:
-                                component:
-                                  type: string
-                                name:
-                                  type: string
-                                value:
-                                  type: string
-                              required:
-                                - name
-                                - value
-                              type: object
-                            type: array
-                        type: object
-                      kustomize:
-                        description: Kustomize holds kustomize specific options
-                        properties:
-                          commonAnnotations:
-                            additionalProperties:
-                              type: string
-                            description: CommonAnnotations adds additional kustomize commonAnnotations
-                            type: object
-                          commonLabels:
-                            additionalProperties:
-                              type: string
-                            description: CommonLabels adds additional kustomize commonLabels
-                            type: object
-                          images:
-                            description: Images are kustomize image overrides
-                            items:
-                              type: string
-                            type: array
-                          namePrefix:
-                            description: NamePrefix is a prefix appended to resources for kustomize apps
-                            type: string
-                          nameSuffix:
-                            description: NameSuffix is a suffix appended to resources for kustomize apps
-                            type: string
-                          version:
-                            description: Version contains optional Kustomize version
-                            type: string
-                        type: object
-                      path:
-                        description: Path is a directory path within the Git repository
-                        type: string
-                      plugin:
-                        description: ConfigManagementPlugin holds config management plugin specific options
-                        properties:
-                          env:
-                            items:
-                              properties:
-                                name:
-                                  description: the name, usually uppercase
-                                  type: string
-                                value:
-                                  description: the value
-                                  type: string
-                              required:
-                                - name
-                                - value
-                              type: object
-                            type: array
-                          name:
-                            type: string
-                        type: object
-                      repoURL:
-                        description: RepoURL is the repository URL of the application manifests
-                        type: string
-                      targetRevision:
-                        description: TargetRevision defines the commit, tag, or branch in which to sync the application to. If omitted, will sync to HEAD
-                        type: string
-                    required:
-                      - repoURL
-                    type: object
-                required:
-                  - deployedAt
-                  - id
-                  - revision
-                type: object
-              type: array
-            observedAt:
-              description: 'ObservedAt indicates when the application state was updated without querying latest git state Deprecated: controller no longer updates ObservedAt field'
-              format: date-time
-              type: string
-            operationState:
-              description: OperationState contains information about state of currently performing operation on application.
-              properties:
-                finishedAt:
-                  description: FinishedAt contains time of operation completion
-                  format: date-time
-                  type: string
-                message:
-                  description: Message hold any pertinent messages when attempting to perform operation (typically errors).
-                  type: string
-                operation:
-                  description: Operation is the original requested operation
-                  properties:
-                    info:
-                      items:
-                        properties:
-                          name:
-                            type: string
-                          value:
-                            type: string
-                        required:
-                          - name
-                          - value
-                        type: object
-                      type: array
-                    initiatedBy:
-                      description: OperationInitiator holds information about the operation initiator
-                      properties:
-                        automated:
-                          description: Automated is set to true if operation was initiated automatically by the application controller.
-                          type: boolean
-                        username:
-                          description: Name of a user who started operation.
-                          type: string
-                      type: object
-                    retry:
-                      description: Retry controls failed sync retry behavior
-                      properties:
-                        backoff:
-                          description: Backoff is a backoff strategy
-                          properties:
-                            duration:
-                              description: Duration is the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
-                              type: string
-                            factor:
-                              description: Factor is a factor to multiply the base duration after each failed retry
-                              format: int64
-                              type: integer
-                            maxDuration:
-                              description: MaxDuration is the maximum amount of time allowed for the backoff strategy
-                              type: string
-                          type: object
-                        limit:
-                          description: Limit is the maximum number of attempts when retrying a container
-                          format: int64
-                          type: integer
-                      type: object
-                    sync:
-                      description: SyncOperation contains sync operation details.
-                      properties:
-                        dryRun:
-                          description: DryRun will perform a `kubectl apply --dry-run` without actually performing the sync
-                          type: boolean
-                        manifests:
-                          description: Manifests is an optional field that overrides sync source with a local directory for development
-                          items:
-                            type: string
-                          type: array
-                        prune:
-                          description: Prune deletes resources that are no longer tracked in git
-                          type: boolean
-                        resources:
-                          description: Resources describes which resources to sync
-                          items:
-                            description: SyncOperationResource contains resources to sync.
-                            properties:
-                              group:
-                                type: string
-                              kind:
-                                type: string
-                              name:
-                                type: string
-                              namespace:
-                                type: string
-                            required:
-                              - kind
-                              - name
-                            type: object
-                          type: array
-                        revision:
-                          description: Revision is the revision in which to sync the application to. If omitted, will use the revision specified in app spec.
-                          type: string
-                        source:
-                          description: Source overrides the source definition set in the application. This is typically set in a Rollback operation and nil during a Sync operation
-                          properties:
-                            chart:
-                              description: Chart is a Helm chart name
-                              type: string
-                            directory:
-                              description: Directory holds path/directory specific options
-                              properties:
-                                exclude:
-                                  type: string
-                                jsonnet:
-                                  description: ApplicationSourceJsonnet holds jsonnet specific options
-                                  properties:
-                                    extVars:
-                                      description: ExtVars is a list of Jsonnet External Variables
-                                      items:
-                                        description: JsonnetVar is a jsonnet variable
-                                        properties:
-                                          code:
-                                            type: boolean
-                                          name:
-                                            type: string
-                                          value:
-                                            type: string
-                                        required:
-                                          - name
-                                          - value
-                                        type: object
-                                      type: array
-                                    libs:
-                                      description: Additional library search dirs
-                                      items:
-                                        type: string
-                                      type: array
-                                    tlas:
-                                      description: TLAS is a list of Jsonnet Top-level Arguments
-                                      items:
-                                        description: JsonnetVar is a jsonnet variable
-                                        properties:
-                                          code:
-                                            type: boolean
-                                          name:
-                                            type: string
-                                          value:
-                                            type: string
-                                        required:
-                                          - name
-                                          - value
-                                        type: object
-                                      type: array
-                                  type: object
-                                recurse:
-                                  type: boolean
-                              type: object
-                            helm:
-                              description: Helm holds helm specific options
-                              properties:
-                                fileParameters:
-                                  description: FileParameters are file parameters to the helm template
-                                  items:
-                                    description: HelmFileParameter is a file parameter to a helm template
-                                    properties:
-                                      name:
-                                        description: Name is the name of the helm parameter
-                                        type: string
-                                      path:
-                                        description: Path is the path value for the helm parameter
-                                        type: string
-                                    type: object
-                                  type: array
-                                parameters:
-                                  description: Parameters are parameters to the helm template
-                                  items:
-                                    description: HelmParameter is a parameter to a helm template
-                                    properties:
-                                      forceString:
-                                        description: ForceString determines whether to tell Helm to interpret booleans and numbers as strings
-                                        type: boolean
-                                      name:
-                                        description: Name is the name of the helm parameter
-                                        type: string
-                                      value:
-                                        description: Value is the value for the helm parameter
-                                        type: string
-                                    type: object
-                                  type: array
-                                releaseName:
-                                  description: The Helm release name. If omitted it will use the application name
-                                  type: string
-                                valueFiles:
-                                  description: ValuesFiles is a list of Helm value files to use when generating a template
-                                  items:
-                                    type: string
-                                  type: array
-                                values:
-                                  description: Values is Helm values, typically defined as a block
-                                  type: string
-                                version:
-                                  description: Version is the Helm version to use for templating with
-                                  type: string
-                              type: object
-                            ksonnet:
-                              description: Ksonnet holds ksonnet specific options
-                              properties:
-                                environment:
-                                  description: Environment is a ksonnet application environment name
-                                  type: string
-                                parameters:
-                                  description: Parameters are a list of ksonnet component parameter override values
-                                  items:
-                                    description: KsonnetParameter is a ksonnet component parameter
-                                    properties:
-                                      component:
-                                        type: string
-                                      name:
-                                        type: string
-                                      value:
-                                        type: string
-                                    required:
-                                      - name
-                                      - value
-                                    type: object
-                                  type: array
-                              type: object
-                            kustomize:
-                              description: Kustomize holds kustomize specific options
-                              properties:
-                                commonAnnotations:
-                                  additionalProperties:
-                                    type: string
-                                  description: CommonAnnotations adds additional kustomize commonAnnotations
-                                  type: object
-                                commonLabels:
-                                  additionalProperties:
-                                    type: string
-                                  description: CommonLabels adds additional kustomize commonLabels
-                                  type: object
-                                images:
-                                  description: Images are kustomize image overrides
-                                  items:
-                                    type: string
-                                  type: array
-                                namePrefix:
-                                  description: NamePrefix is a prefix appended to resources for kustomize apps
-                                  type: string
-                                nameSuffix:
-                                  description: NameSuffix is a suffix appended to resources for kustomize apps
-                                  type: string
-                                version:
-                                  description: Version contains optional Kustomize version
-                                  type: string
-                              type: object
-                            path:
-                              description: Path is a directory path within the Git repository
-                              type: string
-                            plugin:
-                              description: ConfigManagementPlugin holds config management plugin specific options
-                              properties:
-                                env:
-                                  items:
-                                    properties:
-                                      name:
-                                        description: the name, usually uppercase
-                                        type: string
-                                      value:
-                                        description: the value
-                                        type: string
-                                    required:
-                                      - name
-                                      - value
-                                    type: object
-                                  type: array
-                                name:
-                                  type: string
-                              type: object
-                            repoURL:
-                              description: RepoURL is the repository URL of the application manifests
-                              type: string
-                            targetRevision:
-                              description: TargetRevision defines the commit, tag, or branch in which to sync the application to. If omitted, will sync to HEAD
-                              type: string
-                          required:
-                            - repoURL
-                          type: object
-                        syncOptions:
-                          description: SyncOptions provide per-sync sync-options, e.g. Validate=false
-                          items:
-                            type: string
-                          type: array
-                        syncStrategy:
-                          description: SyncStrategy describes how to perform the sync
-                          properties:
-                            apply:
-                              description: Apply will perform a `kubectl apply` to perform the sync.
-                              properties:
-                                force:
-                                  description: Force indicates whether or not to supply the --force flag to `kubectl apply`. The --force flag deletes and re-create the resource, when PATCH encounters conflict and has retried for 5 times.
-                                  type: boolean
-                              type: object
-                            hook:
-                              description: Hook will submit any referenced resources to perform the sync. This is the default strategy
-                              properties:
-                                force:
-                                  description: Force indicates whether or not to supply the --force flag to `kubectl apply`. The --force flag deletes and re-create the resource, when PATCH encounters conflict and has retried for 5 times.
-                                  type: boolean
-                              type: object
-                          type: object
-                      type: object
-                  type: object
-                phase:
-                  description: Phase is the current phase of the operation
-                  type: string
-                retryCount:
-                  description: RetryCount contains time of operation retries
-                  format: int64
-                  type: integer
-                startedAt:
-                  description: StartedAt contains time of operation start
-                  format: date-time
-                  type: string
-                syncResult:
-                  description: SyncResult is the result of a Sync operation
-                  properties:
-                    resources:
-                      description: Resources holds the sync result of each individual resource
-                      items:
-                        description: ResourceResult holds the operation result details of a specific resource
-                        properties:
-                          group:
-                            type: string
-                          hookPhase:
-                            description: 'the state of any operation associated with this resource OR hook note: can contain values for non-hook resources'
-                            type: string
-                          hookType:
-                            description: the type of the hook, empty for non-hook resources
-                            type: string
-                          kind:
-                            type: string
-                          message:
-                            description: message for the last sync OR operation
-                            type: string
-                          name:
-                            type: string
-                          namespace:
-                            type: string
-                          status:
-                            description: the final result of the sync, this is be empty if the resources is yet to be applied/pruned and is always zero-value for hooks
-                            type: string
-                          syncPhase:
-                            description: indicates the particular phase of the sync that this is for
-                            type: string
-                          version:
-                            type: string
-                        required:
-                          - group
-                          - kind
-                          - name
-                          - namespace
-                          - version
-                        type: object
-                      type: array
-                    revision:
-                      description: Revision holds the revision of the sync
-                      type: string
-                    source:
-                      description: Source records the application source information of the sync, used for comparing auto-sync
-                      properties:
-                        chart:
-                          description: Chart is a Helm chart name
-                          type: string
-                        directory:
-                          description: Directory holds path/directory specific options
-                          properties:
-                            exclude:
-                              type: string
-                            jsonnet:
-                              description: ApplicationSourceJsonnet holds jsonnet specific options
-                              properties:
-                                extVars:
-                                  description: ExtVars is a list of Jsonnet External Variables
-                                  items:
-                                    description: JsonnetVar is a jsonnet variable
-                                    properties:
-                                      code:
-                                        type: boolean
-                                      name:
-                                        type: string
-                                      value:
-                                        type: string
-                                    required:
-                                      - name
-                                      - value
-                                    type: object
-                                  type: array
-                                libs:
-                                  description: Additional library search dirs
-                                  items:
-                                    type: string
-                                  type: array
-                                tlas:
-                                  description: TLAS is a list of Jsonnet Top-level Arguments
-                                  items:
-                                    description: JsonnetVar is a jsonnet variable
-                                    properties:
-                                      code:
-                                        type: boolean
-                                      name:
-                                        type: string
-                                      value:
-                                        type: string
-                                    required:
-                                      - name
-                                      - value
-                                    type: object
-                                  type: array
-                              type: object
-                            recurse:
-                              type: boolean
-                          type: object
-                        helm:
-                          description: Helm holds helm specific options
-                          properties:
-                            fileParameters:
-                              description: FileParameters are file parameters to the helm template
-                              items:
-                                description: HelmFileParameter is a file parameter to a helm template
-                                properties:
-                                  name:
-                                    description: Name is the name of the helm parameter
-                                    type: string
-                                  path:
-                                    description: Path is the path value for the helm parameter
-                                    type: string
-                                type: object
-                              type: array
-                            parameters:
-                              description: Parameters are parameters to the helm template
-                              items:
-                                description: HelmParameter is a parameter to a helm template
-                                properties:
-                                  forceString:
-                                    description: ForceString determines whether to tell Helm to interpret booleans and numbers as strings
-                                    type: boolean
-                                  name:
-                                    description: Name is the name of the helm parameter
-                                    type: string
-                                  value:
-                                    description: Value is the value for the helm parameter
-                                    type: string
-                                type: object
-                              type: array
-                            releaseName:
-                              description: The Helm release name. If omitted it will use the application name
-                              type: string
-                            valueFiles:
-                              description: ValuesFiles is a list of Helm value files to use when generating a template
-                              items:
-                                type: string
-                              type: array
-                            values:
-                              description: Values is Helm values, typically defined as a block
-                              type: string
-                            version:
-                              description: Version is the Helm version to use for templating with
-                              type: string
-                          type: object
-                        ksonnet:
-                          description: Ksonnet holds ksonnet specific options
-                          properties:
-                            environment:
-                              description: Environment is a ksonnet application environment name
-                              type: string
-                            parameters:
-                              description: Parameters are a list of ksonnet component parameter override values
-                              items:
-                                description: KsonnetParameter is a ksonnet component parameter
-                                properties:
-                                  component:
-                                    type: string
-                                  name:
-                                    type: string
-                                  value:
-                                    type: string
-                                required:
-                                  - name
-                                  - value
-                                type: object
-                              type: array
-                          type: object
-                        kustomize:
-                          description: Kustomize holds kustomize specific options
-                          properties:
-                            commonAnnotations:
-                              additionalProperties:
-                                type: string
-                              description: CommonAnnotations adds additional kustomize commonAnnotations
-                              type: object
-                            commonLabels:
-                              additionalProperties:
-                                type: string
-                              description: CommonLabels adds additional kustomize commonLabels
-                              type: object
-                            images:
-                              description: Images are kustomize image overrides
-                              items:
-                                type: string
-                              type: array
-                            namePrefix:
-                              description: NamePrefix is a prefix appended to resources for kustomize apps
-                              type: string
-                            nameSuffix:
-                              description: NameSuffix is a suffix appended to resources for kustomize apps
-                              type: string
-                            version:
-                              description: Version contains optional Kustomize version
-                              type: string
-                          type: object
-                        path:
-                          description: Path is a directory path within the Git repository
-                          type: string
-                        plugin:
-                          description: ConfigManagementPlugin holds config management plugin specific options
-                          properties:
-                            env:
-                              items:
-                                properties:
-                                  name:
-                                    description: the name, usually uppercase
-                                    type: string
-                                  value:
-                                    description: the value
-                                    type: string
-                                required:
-                                  - name
-                                  - value
-                                type: object
-                              type: array
-                            name:
-                              type: string
-                          type: object
-                        repoURL:
-                          description: RepoURL is the repository URL of the application manifests
-                          type: string
-                        targetRevision:
-                          description: TargetRevision defines the commit, tag, or branch in which to sync the application to. If omitted, will sync to HEAD
-                          type: string
-                      required:
-                        - repoURL
-                      type: object
-                  required:
-                    - revision
-                  type: object
-              required:
-                - operation
-                - phase
-                - startedAt
-              type: object
-            reconciledAt:
-              description: ReconciledAt indicates when the application state was reconciled using the latest git version
-              format: date-time
-              type: string
-            resources:
-              items:
-                description: ResourceStatus holds the current sync and health status of a resource
-                properties:
-                  group:
-                    type: string
-                  health:
-                    properties:
-                      message:
-                        type: string
-                      status:
-                        description: Represents resource health status
-                        type: string
-                    type: object
-                  hook:
-                    type: boolean
-                  kind:
-                    type: string
-                  name:
-                    type: string
-                  namespace:
-                    type: string
-                  requiresPruning:
-                    type: boolean
-                  status:
-                    description: SyncStatusCode is a type which represents possible comparison results
-                    type: string
-                  version:
-                    type: string
-                type: object
-              type: array
-            sourceType:
-              type: string
-            summary:
-              properties:
-                externalURLs:
-                  description: ExternalURLs holds all external URLs of application child resources.
-                  items:
-                    type: string
-                  type: array
-                images:
-                  description: Images holds all images of application child resources.
-                  items:
-                    type: string
-                  type: array
-              type: object
-            sync:
-              description: SyncStatus is a comparison result of application spec and deployed application.
-              properties:
-                comparedTo:
-                  description: ComparedTo contains application source and target which was used for resources comparison
-                  properties:
-                    destination:
-                      description: ApplicationDestination contains deployment destination information
-                      properties:
-                        name:
-                          description: Name of the destination cluster which can be used instead of server (url) field
-                          type: string
-                        namespace:
-                          description: Namespace overrides the environment namespace value in the ksonnet app.yaml
-                          type: string
-                        server:
-                          description: Server overrides the environment server value in the ksonnet app.yaml
-                          type: string
-                      type: object
-                    source:
-                      description: ApplicationSource contains information about github repository, path within repository and target application environment.
-                      properties:
-                        chart:
-                          description: Chart is a Helm chart name
-                          type: string
-                        directory:
-                          description: Directory holds path/directory specific options
-                          properties:
-                            exclude:
-                              type: string
-                            jsonnet:
-                              description: ApplicationSourceJsonnet holds jsonnet specific options
-                              properties:
-                                extVars:
-                                  description: ExtVars is a list of Jsonnet External Variables
-                                  items:
-                                    description: JsonnetVar is a jsonnet variable
-                                    properties:
-                                      code:
-                                        type: boolean
-                                      name:
-                                        type: string
-                                      value:
-                                        type: string
-                                    required:
-                                      - name
-                                      - value
-                                    type: object
-                                  type: array
-                                libs:
-                                  description: Additional library search dirs
-                                  items:
-                                    type: string
-                                  type: array
-                                tlas:
-                                  description: TLAS is a list of Jsonnet Top-level Arguments
-                                  items:
-                                    description: JsonnetVar is a jsonnet variable
-                                    properties:
-                                      code:
-                                        type: boolean
-                                      name:
-                                        type: string
-                                      value:
-                                        type: string
-                                    required:
-                                      - name
-                                      - value
-                                    type: object
-                                  type: array
-                              type: object
-                            recurse:
-                              type: boolean
-                          type: object
-                        helm:
-                          description: Helm holds helm specific options
-                          properties:
-                            fileParameters:
-                              description: FileParameters are file parameters to the helm template
-                              items:
-                                description: HelmFileParameter is a file parameter to a helm template
-                                properties:
-                                  name:
-                                    description: Name is the name of the helm parameter
-                                    type: string
-                                  path:
-                                    description: Path is the path value for the helm parameter
-                                    type: string
-                                type: object
-                              type: array
-                            parameters:
-                              description: Parameters are parameters to the helm template
-                              items:
-                                description: HelmParameter is a parameter to a helm template
-                                properties:
-                                  forceString:
-                                    description: ForceString determines whether to tell Helm to interpret booleans and numbers as strings
-                                    type: boolean
-                                  name:
-                                    description: Name is the name of the helm parameter
-                                    type: string
-                                  value:
-                                    description: Value is the value for the helm parameter
-                                    type: string
-                                type: object
-                              type: array
-                            releaseName:
-                              description: The Helm release name. If omitted it will use the application name
-                              type: string
-                            valueFiles:
-                              description: ValuesFiles is a list of Helm value files to use when generating a template
-                              items:
-                                type: string
-                              type: array
-                            values:
-                              description: Values is Helm values, typically defined as a block
-                              type: string
-                            version:
-                              description: Version is the Helm version to use for templating with
-                              type: string
-                          type: object
-                        ksonnet:
-                          description: Ksonnet holds ksonnet specific options
-                          properties:
-                            environment:
-                              description: Environment is a ksonnet application environment name
-                              type: string
-                            parameters:
-                              description: Parameters are a list of ksonnet component parameter override values
-                              items:
-                                description: KsonnetParameter is a ksonnet component parameter
-                                properties:
-                                  component:
-                                    type: string
-                                  name:
-                                    type: string
-                                  value:
-                                    type: string
-                                required:
-                                  - name
-                                  - value
-                                type: object
-                              type: array
-                          type: object
-                        kustomize:
-                          description: Kustomize holds kustomize specific options
-                          properties:
-                            commonAnnotations:
-                              additionalProperties:
-                                type: string
-                              description: CommonAnnotations adds additional kustomize commonAnnotations
-                              type: object
-                            commonLabels:
-                              additionalProperties:
-                                type: string
-                              description: CommonLabels adds additional kustomize commonLabels
-                              type: object
-                            images:
-                              description: Images are kustomize image overrides
-                              items:
-                                type: string
-                              type: array
-                            namePrefix:
-                              description: NamePrefix is a prefix appended to resources for kustomize apps
-                              type: string
-                            nameSuffix:
-                              description: NameSuffix is a suffix appended to resources for kustomize apps
-                              type: string
-                            version:
-                              description: Version contains optional Kustomize version
-                              type: string
-                          type: object
-                        path:
-                          description: Path is a directory path within the Git repository
-                          type: string
-                        plugin:
-                          description: ConfigManagementPlugin holds config management plugin specific options
-                          properties:
-                            env:
-                              items:
-                                properties:
-                                  name:
-                                    description: the name, usually uppercase
-                                    type: string
-                                  value:
-                                    description: the value
-                                    type: string
-                                required:
-                                  - name
-                                  - value
-                                type: object
-                              type: array
-                            name:
-                              type: string
-                          type: object
-                        repoURL:
-                          description: RepoURL is the repository URL of the application manifests
-                          type: string
-                        targetRevision:
-                          description: TargetRevision defines the commit, tag, or branch in which to sync the application to. If omitted, will sync to HEAD
-                          type: string
-                      required:
-                        - repoURL
-                      type: object
-                  required:
-                    - destination
-                    - source
-                  type: object
-                revision:
-                  type: string
-                status:
-                  description: SyncStatusCode is a type which represents possible comparison results
-                  type: string
-              required:
-                - status
-              type: object
-          type: object
-      required:
-        - metadata
-        - spec
-      type: object
-  version: v1alpha1
-  versions:
-    - name: v1alpha1
-      served: true
-      storage: true
----
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  labels:
-    app.kubernetes.io/name: appprojects.argoproj.io
-    app.kubernetes.io/part-of: argocd
-  name: appprojects.argoproj.io
-spec:
-  group: argoproj.io
-  names:
-    kind: AppProject
-    listKind: AppProjectList
-    plural: appprojects
-    shortNames:
-      - appproj
-      - appprojs
-    singular: appproject
-  scope: Namespaced
-  validation:
-    openAPIV3Schema:
-      description: 'AppProject provides a logical grouping of applications, providing controls for: * where the apps may deploy to (cluster whitelist) * what may be deployed (repository whitelist, resource whitelist/blacklist) * who can access these applications (roles, OIDC group claims bindings) * and what they can do (RBAC policies) * automation access to these roles (JWT tokens)'
-      properties:
-        apiVersion:
-          description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
-          type: string
-        kind:
-          description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-          type: string
-        metadata:
-          type: object
-        spec:
-          description: AppProjectSpec is the specification of an AppProject
-          properties:
-            clusterResourceBlacklist:
-              description: ClusterResourceBlacklist contains list of blacklisted cluster level resources
-              items:
-                description: GroupKind specifies a Group and a Kind, but does not force a version.  This is useful for identifying concepts during lookup stages without having partially valid types
-                properties:
-                  group:
-                    type: string
-                  kind:
-                    type: string
-                required:
-                  - group
-                  - kind
-                type: object
-              type: array
-            clusterResourceWhitelist:
-              description: ClusterResourceWhitelist contains list of whitelisted cluster level resources
-              items:
-                description: GroupKind specifies a Group and a Kind, but does not force a version.  This is useful for identifying concepts during lookup stages without having partially valid types
-                properties:
-                  group:
-                    type: string
-                  kind:
-                    type: string
-                required:
-                  - group
-                  - kind
-                type: object
-              type: array
-            description:
-              description: Description contains optional project description
-              type: string
-            destinations:
-              description: Destinations contains list of destinations available for deployment
-              items:
-                description: ApplicationDestination contains deployment destination information
-                properties:
-                  name:
-                    description: Name of the destination cluster which can be used instead of server (url) field
-                    type: string
-                  namespace:
-                    description: Namespace overrides the environment namespace value in the ksonnet app.yaml
-                    type: string
-                  server:
-                    description: Server overrides the environment server value in the ksonnet app.yaml
-                    type: string
-                type: object
-              type: array
-            namespaceResourceBlacklist:
-              description: NamespaceResourceBlacklist contains list of blacklisted namespace level resources
-              items:
-                description: GroupKind specifies a Group and a Kind, but does not force a version.  This is useful for identifying concepts during lookup stages without having partially valid types
-                properties:
-                  group:
-                    type: string
-                  kind:
-                    type: string
-                required:
-                  - group
-                  - kind
-                type: object
-              type: array
-            namespaceResourceWhitelist:
-              description: NamespaceResourceWhitelist contains list of whitelisted namespace level resources
-              items:
-                description: GroupKind specifies a Group and a Kind, but does not force a version.  This is useful for identifying concepts during lookup stages without having partially valid types
-                properties:
-                  group:
-                    type: string
-                  kind:
-                    type: string
-                required:
-                  - group
-                  - kind
-                type: object
-              type: array
-            orphanedResources:
-              description: OrphanedResources specifies if controller should monitor orphaned resources of apps in this project
-              properties:
-                ignore:
-                  items:
-                    properties:
-                      group:
-                        type: string
-                      kind:
-                        type: string
-                      name:
-                        type: string
-                    type: object
-                  type: array
-                warn:
-                  description: Warn indicates if warning condition should be created for apps which have orphaned resources
-                  type: boolean
-              type: object
-            roles:
-              description: Roles are user defined RBAC roles associated with this project
-              items:
-                description: ProjectRole represents a role that has access to a project
-                properties:
-                  description:
-                    description: Description is a description of the role
-                    type: string
-                  groups:
-                    description: Groups are a list of OIDC group claims bound to this role
-                    items:
-                      type: string
-                    type: array
-                  jwtTokens:
-                    description: JWTTokens are a list of generated JWT tokens bound to this role
-                    items:
-                      description: JWTToken holds the issuedAt and expiresAt values of a token
-                      properties:
-                        exp:
-                          format: int64
-                          type: integer
-                        iat:
-                          format: int64
-                          type: integer
-                        id:
-                          type: string
-                      required:
-                        - iat
-                      type: object
-                    type: array
-                  name:
-                    description: Name is a name for this role
-                    type: string
-                  policies:
-                    description: Policies Stores a list of casbin formated strings that define access policies for the role in the project
-                    items:
-                      type: string
-                    type: array
-                required:
-                  - name
-                type: object
-              type: array
-            signatureKeys:
-              description: List of PGP key IDs that commits to be synced to must be signed with
-              items:
-                description: SignatureKey is the specification of a key required to verify commit signatures with
-                properties:
-                  keyID:
-                    description: The ID of the key in hexadecimal notation
-                    type: string
-                required:
-                  - keyID
-                type: object
-              type: array
-            sourceRepos:
-              description: SourceRepos contains list of repository URLs which can be used for deployment
-              items:
-                type: string
-              type: array
-            syncWindows:
-              description: SyncWindows controls when syncs can be run for apps in this project
-              items:
-                description: SyncWindow contains the kind, time, duration and attributes that are used to assign the syncWindows to apps
-                properties:
-                  applications:
-                    description: Applications contains a list of applications that the window will apply to
-                    items:
-                      type: string
-                    type: array
-                  clusters:
-                    description: Clusters contains a list of clusters that the window will apply to
-                    items:
-                      type: string
-                    type: array
-                  duration:
-                    description: Duration is the amount of time the sync window will be open
-                    type: string
-                  kind:
-                    description: Kind defines if the window allows or blocks syncs
-                    type: string
-                  manualSync:
-                    description: ManualSync enables manual syncs when they would otherwise be blocked
-                    type: boolean
-                  namespaces:
-                    description: Namespaces contains a list of namespaces that the window will apply to
-                    items:
-                      type: string
-                    type: array
-                  schedule:
-                    description: Schedule is the time the window will begin, specified in cron format
-                    type: string
-                type: object
-              type: array
-          type: object
-      required:
-        - metadata
-        - spec
-      type: object
-  version: v1alpha1
-  versions:
-    - name: v1alpha1
-      served: true
-      storage: true
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app.kubernetes.io/component: application-controller
-    app.kubernetes.io/name: argocd-application-controller
-    app.kubernetes.io/part-of: argocd
-  name: argocd-application-controller
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app.kubernetes.io/component: dex-server
-    app.kubernetes.io/name: argocd-dex-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-dex-server
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app.kubernetes.io/component: redis
-    app.kubernetes.io/name: argocd-redis
-    app.kubernetes.io/part-of: argocd
-  name: argocd-redis
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: argocd-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-server
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  labels:
-    app.kubernetes.io/component: application-controller
-    app.kubernetes.io/name: argocd-application-controller
-    app.kubernetes.io/part-of: argocd
-  name: argocd-application-controller
-rules:
-  - apiGroups:
-      - ""
-    resources:
-      - secrets
-      - configmaps
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - argoproj.io
-    resources:
-      - applications
-      - appprojects
-    verbs:
-      - create
-      - get
-      - list
-      - watch
-      - update
-      - patch
-      - delete
-  - apiGroups:
-      - ""
-    resources:
-      - events
-    verbs:
-      - create
-      - list
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  labels:
-    app.kubernetes.io/component: dex-server
-    app.kubernetes.io/name: argocd-dex-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-dex-server
-rules:
-  - apiGroups:
-      - ""
-    resources:
-      - secrets
-      - configmaps
-    verbs:
-      - get
-      - list
-      - watch
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  labels:
-    app.kubernetes.io/component: redis
-    app.kubernetes.io/name: argocd-redis
-    app.kubernetes.io/part-of: argocd
-  name: argocd-redis
-rules:
-  - apiGroups:
-      - security.openshift.io
-    resourceNames:
-      - nonroot
-    resources:
-      - securitycontextconstraints
-    verbs:
-      - use
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: argocd-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-server
-rules:
-  - apiGroups:
-      - ""
-    resources:
-      - secrets
-      - configmaps
-    verbs:
-      - create
-      - get
-      - list
-      - watch
-      - update
-      - patch
-      - delete
-  - apiGroups:
-      - argoproj.io
-    resources:
-      - applications
-      - appprojects
-    verbs:
-      - create
-      - get
-      - list
-      - watch
-      - update
-      - delete
-      - patch
-  - apiGroups:
-      - ""
-    resources:
-      - events
-    verbs:
-      - create
-      - list
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  labels:
-    app.kubernetes.io/component: application-controller
-    app.kubernetes.io/name: argocd-application-controller
-    app.kubernetes.io/part-of: argocd
-  name: argocd-application-controller
-rules:
-  - apiGroups:
-      - '*'
-    resources:
-      - '*'
-    verbs:
-      - '*'
-  - nonResourceURLs:
-      - '*'
-    verbs:
-      - '*'
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: argocd-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-server
-rules:
-  - apiGroups:
-      - '*'
-    resources:
-      - '*'
-    verbs:
-      - delete
-      - get
-      - patch
-  - apiGroups:
-      - ""
-    resources:
-      - events
-    verbs:
-      - list
-  - apiGroups:
-      - ""
-    resources:
-      - pods
-      - pods/log
-    verbs:
-      - get
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  labels:
-    app.kubernetes.io/component: application-controller
-    app.kubernetes.io/name: argocd-application-controller
-    app.kubernetes.io/part-of: argocd
-  name: argocd-application-controller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: argocd-application-controller
-subjects:
-  - kind: ServiceAccount
-    name: argocd-application-controller
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  labels:
-    app.kubernetes.io/component: dex-server
-    app.kubernetes.io/name: argocd-dex-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-dex-server
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: argocd-dex-server
-subjects:
-  - kind: ServiceAccount
-    name: argocd-dex-server
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  labels:
-    app.kubernetes.io/component: redis
-    app.kubernetes.io/name: argocd-redis
-    app.kubernetes.io/part-of: argocd
-  name: argocd-redis
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: argocd-redis
-subjects:
-  - kind: ServiceAccount
-    name: argocd-redis
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: argocd-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-server
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: argocd-server
-subjects:
-  - kind: ServiceAccount
-    name: argocd-server
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  labels:
-    app.kubernetes.io/component: application-controller
-    app.kubernetes.io/name: argocd-application-controller
-    app.kubernetes.io/part-of: argocd
-  name: argocd-application-controller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: argocd-application-controller
-subjects:
-  - kind: ServiceAccount
-    name: argocd-application-controller
-    namespace: argocd
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: argocd-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-server
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: argocd-server
-subjects:
-  - kind: ServiceAccount
-    name: argocd-server
-    namespace: argocd
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  labels:
-    app.kubernetes.io/name: argocd-cm
-    app.kubernetes.io/part-of: argocd
-  name: argocd-cm
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  labels:
-    app.kubernetes.io/name: argocd-gpg-keys-cm
-    app.kubernetes.io/part-of: argocd
-  name: argocd-gpg-keys-cm
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  labels:
-    app.kubernetes.io/name: argocd-rbac-cm
-    app.kubernetes.io/part-of: argocd
-  name: argocd-rbac-cm
----
-apiVersion: v1
-data:
-  ssh_known_hosts: |
-    bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw==
-    github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
-    gitlab.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFSMqzJeV9rUzU4kWitGjeR4PWSa29SPqJ1fVkhtj3Hw9xjLVXVYrU9QlYWrOLXBpQ6KWjbjTDTdDkoohFzgbEY=
-    gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfuCHKVTjquxvt6CM6tdG4SLp1Btn/nOeHHE5UOzRdf
-    gitlab.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsj2bNKTBSpIYDEGk9KxsGh3mySTRgMtXL583qmBpzeQ+jqCMRgBqB98u3z++J1sKlXHWfM9dyhSevkMwSbhoR8XIq/U0tCNyokEi/ueaBMCvbcTHhO7FcwzY92WK4Yt0aGROY5qX2UKSeOvuP4D6TPqKF1onrSzH9bx9XUf2lEdWT/ia1NEKjunUqu1xOB/StKDHMoX4/OKyIzuS0q/T1zOATthvasJFoPrAjkohTyaDUz2LN5JoH839hViyEG82yB+MjcFV5MU3N1l1QL3cVUCh93xSaua1N85qivl+siMkPGbO5xR/En4iEY6K2XPASUEMaieWVNTRCtJ4S8H+9
-    ssh.dev.azure.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7Hr1oTWqNqOlzGJOfGJ4NakVyIzf1rXYd4d7wo6jBlkLvCA4odBlL0mDUyZ0/QUfTTqeu+tm22gOsv+VrVTMk6vwRU75gY/y9ut5Mb3bR5BV58dKXyq9A9UeB5Cakehn5Zgm6x1mKoVyf+FFn26iYqXJRgzIZZcZ5V6hrE0Qg39kZm4az48o0AUbf6Sp4SLdvnuMa2sVNwHBboS7EJkm57XQPVU3/QpyNLHbWDdzwtrlS+ez30S3AdYhLKEOxAG8weOnyrtLJAUen9mTkol8oII1edf7mWWbWVf0nBmly21+nZcmCTISQBtdcyPaEno7fFQMDD26/s0lfKob4Kw8H
-    vs-ssh.visualstudio.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7Hr1oTWqNqOlzGJOfGJ4NakVyIzf1rXYd4d7wo6jBlkLvCA4odBlL0mDUyZ0/QUfTTqeu+tm22gOsv+VrVTMk6vwRU75gY/y9ut5Mb3bR5BV58dKXyq9A9UeB5Cakehn5Zgm6x1mKoVyf+FFn26iYqXJRgzIZZcZ5V6hrE0Qg39kZm4az48o0AUbf6Sp4SLdvnuMa2sVNwHBboS7EJkm57XQPVU3/QpyNLHbWDdzwtrlS+ez30S3AdYhLKEOxAG8weOnyrtLJAUen9mTkol8oII1edf7mWWbWVf0nBmly21+nZcmCTISQBtdcyPaEno7fFQMDD26/s0lfKob4Kw8H
-kind: ConfigMap
-metadata:
-  labels:
-    app.kubernetes.io/name: argocd-ssh-known-hosts-cm
-    app.kubernetes.io/part-of: argocd
-  name: argocd-ssh-known-hosts-cm
----
-apiVersion: v1
-data: null
-kind: ConfigMap
-metadata:
-  labels:
-    app.kubernetes.io/name: argocd-tls-certs-cm
-    app.kubernetes.io/part-of: argocd
-  name: argocd-tls-certs-cm
----
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app.kubernetes.io/name: argocd-secret
-    app.kubernetes.io/part-of: argocd
-  name: argocd-secret
-type: Opaque
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app.kubernetes.io/component: dex-server
-    app.kubernetes.io/name: argocd-dex-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-dex-server
-spec:
-  ports:
-    - name: http
-      port: 5556
-      protocol: TCP
-      targetPort: 5556
-    - name: grpc
-      port: 5557
-      protocol: TCP
-      targetPort: 5557
-    - name: metrics
-      port: 5558
-      protocol: TCP
-      targetPort: 5558
-  selector:
-    app.kubernetes.io/name: argocd-dex-server
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app.kubernetes.io/component: metrics
-    app.kubernetes.io/name: argocd-metrics
-    app.kubernetes.io/part-of: argocd
-  name: argocd-metrics
-spec:
-  ports:
-    - name: metrics
-      port: 8082
-      protocol: TCP
-      targetPort: 8082
-  selector:
-    app.kubernetes.io/name: argocd-application-controller
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app.kubernetes.io/component: redis
-    app.kubernetes.io/name: argocd-redis
-    app.kubernetes.io/part-of: argocd
-  name: argocd-redis
-spec:
-  ports:
-    - name: tcp-redis
-      port: 6379
-      targetPort: 6379
-  selector:
-    app.kubernetes.io/name: argocd-redis
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app.kubernetes.io/component: repo-server
-    app.kubernetes.io/name: argocd-repo-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-repo-server
-spec:
-  ports:
-    - name: server
-      port: 8081
-      protocol: TCP
-      targetPort: 8081
-    - name: metrics
-      port: 8084
-      protocol: TCP
-      targetPort: 8084
-  selector:
-    app.kubernetes.io/name: argocd-repo-server
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: argocd-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-server
-spec:
-  ports:
-    - name: http
-      port: 80
-      protocol: TCP
-      targetPort: 8080
-    - name: https
-      port: 443
-      protocol: TCP
-      targetPort: 8080
-  selector:
-    app.kubernetes.io/name: argocd-server
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: argocd-server-metrics
-    app.kubernetes.io/part-of: argocd
-  name: argocd-server-metrics
-spec:
-  ports:
-    - name: metrics
-      port: 8083
-      protocol: TCP
-      targetPort: 8083
-  selector:
-    app.kubernetes.io/name: argocd-server
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app.kubernetes.io/component: dex-server
-    app.kubernetes.io/name: argocd-dex-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-dex-server
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-dex-server
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-dex-server
-    spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/part-of: argocd
-                topologyKey: kubernetes.io/hostname
-              weight: 5
-      containers:
-        - command:
-            - /shared/argocd-util
-            - rundex
-          image: ghcr.io/dexidp/dex:v2.27.0
-          imagePullPolicy: Always
-          name: dex
-          ports:
-            - containerPort: 5556
-            - containerPort: 5557
-            - containerPort: 5558
-          volumeMounts:
-            - mountPath: /shared
-              name: static-files
-      initContainers:
-        - command:
-            - cp
-            - -n
-            - /usr/local/bin/argocd-util
-            - /shared
-          image: argoproj/argocd:v1.8.7
-          imagePullPolicy: Always
-          name: copyutil
-          volumeMounts:
-            - mountPath: /shared
-              name: static-files
-      serviceAccountName: argocd-dex-server
-      volumes:
-        - emptyDir: {}
-          name: static-files
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app.kubernetes.io/component: redis
-    app.kubernetes.io/name: argocd-redis
-    app.kubernetes.io/part-of: argocd
-  name: argocd-redis
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-redis
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-redis
-    spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: argocd-redis
-                topologyKey: kubernetes.io/hostname
-              weight: 100
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/part-of: argocd
-                topologyKey: kubernetes.io/hostname
-              weight: 5
-      containers:
-        - args:
-            - --save
-            - ""
-            - --appendonly
-            - "no"
-          image: redis:5.0.10-alpine
-          imagePullPolicy: Always
-          name: redis
-          ports:
-            - containerPort: 6379
-      securityContext:
-        fsGroup: 1000
-        runAsGroup: 1000
-        runAsNonRoot: true
-        runAsUser: 1000
-      serviceAccountName: argocd-redis
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app.kubernetes.io/component: repo-server
-    app.kubernetes.io/name: argocd-repo-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-repo-server
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-repo-server
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-repo-server
-    spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: argocd-repo-server
-                topologyKey: kubernetes.io/hostname
-              weight: 100
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/part-of: argocd
-                topologyKey: kubernetes.io/hostname
-              weight: 5
-      automountServiceAccountToken: false
-      containers:
-        - command:
-            - uid_entrypoint.sh
-            - argocd-repo-server
-            - --redis
-            - argocd-redis:6379
-          image: argoproj/argocd:v1.8.7
-          imagePullPolicy: Always
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /healthz?full=true
-              port: 8084
-            initialDelaySeconds: 30
-            periodSeconds: 5
-          name: argocd-repo-server
-          ports:
-            - containerPort: 8081
-            - containerPort: 8084
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 8084
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          volumeMounts:
-            - mountPath: /app/config/ssh
-              name: ssh-known-hosts
-            - mountPath: /app/config/tls
-              name: tls-certs
-            - mountPath: /app/config/gpg/source
-              name: gpg-keys
-            - mountPath: /app/config/gpg/keys
-              name: gpg-keyring
-      volumes:
-        - configMap:
-            name: argocd-ssh-known-hosts-cm
-          name: ssh-known-hosts
-        - configMap:
-            name: argocd-tls-certs-cm
-          name: tls-certs
-        - configMap:
-            name: argocd-gpg-keys-cm
-          name: gpg-keys
-        - emptyDir: {}
-          name: gpg-keyring
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: argocd-server
-    app.kubernetes.io/part-of: argocd
-  name: argocd-server
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-server
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-server
-    spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: argocd-server
-                topologyKey: kubernetes.io/hostname
-              weight: 100
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/part-of: argocd
-                topologyKey: kubernetes.io/hostname
-              weight: 5
-      containers:
-        - command:
-            - argocd-server
-            - --staticassets
-            - /shared/app
-          image: argoproj/argocd:v1.8.7
-          imagePullPolicy: Always
-          livenessProbe:
-            httpGet:
-              path: /healthz?full=true
-              port: 8080
-            initialDelaySeconds: 3
-            periodSeconds: 30
-          name: argocd-server
-          ports:
-            - containerPort: 8080
-            - containerPort: 8083
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 8080
-            initialDelaySeconds: 3
-            periodSeconds: 30
-          volumeMounts:
-            - mountPath: /app/config/ssh
-              name: ssh-known-hosts
-            - mountPath: /app/config/tls
-              name: tls-certs
-      serviceAccountName: argocd-server
-      volumes:
-        - emptyDir: {}
-          name: static-files
-        - configMap:
-            name: argocd-ssh-known-hosts-cm
-          name: ssh-known-hosts
-        - configMap:
-            name: argocd-tls-certs-cm
-          name: tls-certs
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  labels:
-    app.kubernetes.io/component: application-controller
-    app.kubernetes.io/name: argocd-application-controller
-    app.kubernetes.io/part-of: argocd
-  name: argocd-application-controller
-spec:
+expose:
+  # Set the way how to expose the service. Set the type as "ingress",
+  # "clusterIP", "nodePort" or "loadBalancer" and fill the information
+  # in the corresponding section
+  type: ingress
+  tls:
+    # Enable the tls or not.
+    # Delete the "ssl-redirect" annotations in "expose.ingress.annotations" when TLS is disabled and "expose.type" is "ingress"
+    # Note: if the "expose.type" is "ingress" and the tls
+    # is disabled, the port must be included in the command when pull/push
+    # images. Refer to https://github.com/goharbor/harbor/issues/5291
+    # for the detail.
+    enabled: true
+    # The source of the tls certificate. Set it as "auto", "secret"
+    # or "none" and fill the information in the corresponding section
+    # 1) auto: generate the tls certificate automatically
+    # 2) secret: read the tls certificate from the specified secret.
+    # The tls certificate can be generated manually or by cert manager
+    # 3) none: configure no tls certificate for the ingress. If the default
+    # tls certificate is configured in the ingress controller, choose this option
+    certSource: auto
+    auto:
+      # The common name used to generate the certificate, it's necessary
+      # when the type isn't "ingress"
+      commonName: ""
+    secret:
+      # The name of secret which contains keys named:
+      # "tls.crt" - the certificate
+      # "tls.key" - the private key
+      secretName: ""
+      # The name of secret which contains keys named:
+      # "tls.crt" - the certificate
+      # "tls.key" - the private key
+      # Only needed when the "expose.type" is "ingress".
+      notarySecretName: ""
+  ingress:
+    hosts:
+      core: core.harbor.domain
+      notary: notary.harbor.domain
+    # set to the type of ingress controller if it has specific requirements.
+    # leave as `default` for most ingress controllers.
+    # set to `gce` if using the GCE ingress controller
+    # set to `ncp` if using the NCP (NSX-T Container Plugin) ingress controller
+    controller: default
+    annotations:
+      # note different ingress controllers may require a different ssl-redirect annotation
+      # for Envoy, use ingress.kubernetes.io/force-ssl-redirect: "true" and remove the nginx lines below
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "0"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  clusterIP:
+    # The name of ClusterIP service
+    name: harbor
+    ports:
+      # The service port Harbor listens on when serving with HTTP
+      httpPort: 80
+      # The service port Harbor listens on when serving with HTTPS
+      httpsPort: 443
+      # The service port Notary listens on. Only needed when notary.enabled
+      # is set to true
+      notaryPort: 4443
+  nodePort:
+    # The name of NodePort service
+    name: harbor
+    ports:
+      http:
+        # The service port Harbor listens on when serving with HTTP
+        port: 80
+        # The node port Harbor listens on when serving with HTTP
+        nodePort: 30002
+      https:
+        # The service port Harbor listens on when serving with HTTPS
+        port: 443
+        # The node port Harbor listens on when serving with HTTPS
+        nodePort: 30003
+      # Only needed when notary.enabled is set to true
+      notary:
+        # The service port Notary listens on
+        port: 4443
+        # The node port Notary listens on
+        nodePort: 30004
+  loadBalancer:
+    # The name of LoadBalancer service
+    name: harbor
+    # Set the IP if the LoadBalancer supports assigning IP
+    IP: ""
+    ports:
+      # The service port Harbor listens on when serving with HTTP
+      httpPort: 80
+      # The service port Harbor listens on when serving with HTTPS
+      httpsPort: 443
+      # The service port Notary listens on. Only needed when notary.enabled
+      # is set to true
+      notaryPort: 4443
+    annotations: {}
+    sourceRanges: []
+
+# The external URL for Harbor core service. It is used to
+# 1) populate the docker/helm commands showed on portal
+# 2) populate the token service URL returned to docker/notary client
+#
+# Format: protocol://domain[:port]. Usually:
+# 1) if "expose.type" is "ingress", the "domain" should be
+# the value of "expose.ingress.hosts.core"
+# 2) if "expose.type" is "clusterIP", the "domain" should be
+# the value of "expose.clusterIP.name"
+# 3) if "expose.type" is "nodePort", the "domain" should be
+# the IP address of k8s node
+#
+# If Harbor is deployed behind the proxy, set it as the URL of proxy
+externalURL: https://core.harbor.domain
+
+# The internal TLS used for harbor components secure communicating. In order to enable https
+# in each components tls cert files need to provided in advance.
+internalTLS:
+  # If internal TLS enabled
+  enabled: false
+  # There are three ways to provide tls
+  # 1) "auto" will generate cert automatically
+  # 2) "manual" need provide cert file manually in following value
+  # 3) "secret" internal certificates from secret
+  certSource: "auto"
+  # The content of trust ca, only available when `certSource` is "manual"
+  trustCa: ""
+  # core related cert configuration
+  core:
+    # secret name for core's tls certs
+    secretName: ""
+    # Content of core's TLS cert file, only available when `certSource` is "manual"
+    crt: ""
+    # Content of core's TLS key file, only available when `certSource` is "manual"
+    key: ""
+  # jobservice related cert configuration
+  jobservice:
+    # secret name for jobservice's tls certs
+    secretName: ""
+    # Content of jobservice's TLS key file, only available when `certSource` is "manual"
+    crt: ""
+    # Content of jobservice's TLS key file, only available when `certSource` is "manual"
+    key: ""
+  # registry related cert configuration
+  registry:
+    # secret name for registry's tls certs
+    secretName: ""
+    # Content of registry's TLS key file, only available when `certSource` is "manual"
+    crt: ""
+    # Content of registry's TLS key file, only available when `certSource` is "manual"
+    key: ""
+  # portal related cert configuration
+  portal:
+    # secret name for portal's tls certs
+    secretName: ""
+    # Content of portal's TLS key file, only available when `certSource` is "manual"
+    crt: ""
+    # Content of portal's TLS key file, only available when `certSource` is "manual"
+    key: ""
+  # chartmuseum related cert configuration
+  chartmuseum:
+    # secret name for chartmuseum's tls certs
+    secretName: ""
+    # Content of chartmuseum's TLS key file, only available when `certSource` is "manual"
+    crt: ""
+    # Content of chartmuseum's TLS key file, only available when `certSource` is "manual"
+    key: ""
+  # trivy related cert configuration
+  trivy:
+    # secret name for trivy's tls certs
+    secretName: ""
+    # Content of trivy's TLS key file, only available when `certSource` is "manual"
+    crt: ""
+    # Content of trivy's TLS key file, only available when `certSource` is "manual"
+    key: ""
+
+# The persistence is enabled by default and a default StorageClass
+# is needed in the k8s cluster to provision volumes dynamicly.
+# Specify another StorageClass in the "storageClass" or set "existingClaim"
+# if you have already existing persistent volumes to use
+#
+# For storing images and charts, you can also use "azure", "gcs", "s3",
+# "swift" or "oss". Set it in the "imageChartStorage" section
+persistence:
+  enabled: true
+  # Setting it to "keep" to avoid removing PVCs during a helm delete
+  # operation. Leaving it empty will delete PVCs after the chart deleted
+  # (this does not apply for PVCs that are created for internal database
+  # and redis components, i.e. they are never deleted automatically)
+  resourcePolicy: "keep"
+  persistentVolumeClaim:
+    registry:
+      # Use the existing PVC which must be created manually before bound,
+      # and specify the "subPath" if the PVC is shared with other components
+      existingClaim: ""
+      # Specify the "storageClass" used to provision the volume. Or the default
+      # StorageClass will be used(the default).
+      # Set it to "-" to disable dynamic provisioning
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 5Gi
+    chartmuseum:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 5Gi
+    jobservice:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+    # If external database is used, the following settings for database will
+    # be ignored
+    database:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+    # If external Redis is used, the following settings for Redis will
+    # be ignored
+    redis:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+    trivy:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 5Gi
+  # Define which storage backend is used for registry and chartmuseum to store
+  # images and charts. Refer to
+  # https://github.com/docker/distribution/blob/master/docs/configuration.md#storage
+  # for the detail.
+  imageChartStorage:
+    # Specify whether to disable `redirect` for images and chart storage, for
+    # backends which not supported it (such as using minio for `s3` storage type), please disable
+    # it. To disable redirects, simply set `disableredirect` to `true` instead.
+    # Refer to
+    # https://github.com/docker/distribution/blob/master/docs/configuration.md#redirect
+    # for the detail.
+    disableredirect: false
+    # Specify the "caBundleSecretName" if the storage service uses a self-signed certificate.
+    # The secret must contain keys named "ca.crt" which will be injected into the trust store
+    # of registry's and chartmuseum's containers.
+    # caBundleSecretName:
+
+    # Specify the type of storage: "filesystem", "azure", "gcs", "s3", "swift",
+    # "oss" and fill the information needed in the corresponding section. The type
+    # must be "filesystem" if you want to use persistent volumes for registry
+    # and chartmuseum
+    type: filesystem
+    filesystem:
+      rootdirectory: /storage
+      #maxthreads: 100
+    azure:
+      accountname: accountname
+      accountkey: base64encodedaccountkey
+      container: containername
+      #realm: core.windows.net
+    gcs:
+      bucket: bucketname
+      # The base64 encoded json file which contains the key
+      encodedkey: base64-encoded-json-key-file
+      #rootdirectory: /gcs/object/name/prefix
+      #chunksize: "5242880"
+    s3:
+      region: us-west-1
+      bucket: bucketname
+      #accesskey: awsaccesskey
+      #secretkey: awssecretkey
+      #regionendpoint: http://myobjects.local
+      #encrypt: false
+      #keyid: mykeyid
+      #secure: true
+      #skipverify: false
+      #v4auth: true
+      #chunksize: "5242880"
+      #rootdirectory: /s3/object/name/prefix
+      #storageclass: STANDARD
+      #multipartcopychunksize: "33554432"
+      #multipartcopymaxconcurrency: 100
+      #multipartcopythresholdsize: "33554432"
+    swift:
+      authurl: https://storage.myprovider.com/v3/auth
+      username: username
+      password: password
+      container: containername
+      #region: fr
+      #tenant: tenantname
+      #tenantid: tenantid
+      #domain: domainname
+      #domainid: domainid
+      #trustid: trustid
+      #insecureskipverify: false
+      #chunksize: 5M
+      #prefix:
+      #secretkey: secretkey
+      #accesskey: accesskey
+      #authversion: 3
+      #endpointtype: public
+      #tempurlcontainerkey: false
+      #tempurlmethods:
+    oss:
+      accesskeyid: accesskeyid
+      accesskeysecret: accesskeysecret
+      region: regionname
+      bucket: bucketname
+      #endpoint: endpoint
+      #internal: false
+      #encrypt: false
+      #secure: true
+      #chunksize: 10M
+      #rootdirectory: rootdirectory
+
+imagePullPolicy: IfNotPresent
+
+# Use this set to assign a list of default pullSecrets
+imagePullSecrets:
+#  - name: docker-registry-secret
+#  - name: internal-registry-secret
+
+# The update strategy for deployments with persistent volumes(jobservice, registry
+# and chartmuseum): "RollingUpdate" or "Recreate"
+# Set it as "Recreate" when "RWM" for volumes isn't supported
+updateStrategy:
+  type: RollingUpdate
+
+# debug, info, warning, error or fatal
+logLevel: info
+
+# The initial password of Harbor admin. Change it from portal after launching Harbor
+harborAdminPassword: "Harbor12345"
+
+# The name of the secret which contains key named "ca.crt". Setting this enables the
+# download link on portal to download the certificate of CA when the certificate isn't
+# generated automatically
+caSecretName: ""
+
+# The secret key used for encryption. Must be a string of 16 chars.
+secretKey: "not-a-secure-key"
+
+# The proxy settings for updating trivy vulnerabilities from the Internet and replicating
+# artifacts from/to the registries that cannot be reached directly
+proxy:
+  httpProxy:
+  httpsProxy:
+  noProxy: 127.0.0.1,localhost,.local,.internal
+  components:
+    - core
+    - jobservice
+    - trivy
+
+# The custom ca bundle secret, the secret must contain key named "ca.crt"
+# which will be injected into the trust store for chartmuseum, core, jobservice, registry, trivy components
+# caBundleSecretName: ""
+
+## UAA Authentication Options
+# If you're using UAA for authentication behind a self-signed
+# certificate you will need to provide the CA Cert.
+# Set uaaSecretName below to provide a pre-created secret that
+# contains a base64 encoded CA Certificate named `ca.crt`.
+# uaaSecretName:
+
+# If expose the service via "ingress", the Nginx will not be used
+nginx:
+  image:
+    repository: goharbor/nginx-photon
+    tag: dev
+  # set the service account to be used, default if left empty
+  serviceAccountName: ""
   replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-application-controller
-  serviceName: argocd-application-controller
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-application-controller
-    spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: argocd-application-controller
-                topologyKey: kubernetes.io/hostname
-              weight: 100
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/part-of: argocd
-                topologyKey: kubernetes.io/hostname
-              weight: 5
-      containers:
-        - command:
-            - argocd-application-controller
-            - --status-processors
-            - "20"
-            - --operation-processors
-            - "10"
-          image: argoproj/argocd:v1.8.7
-          imagePullPolicy: Always
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 8082
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          name: argocd-application-controller
-          ports:
-            - containerPort: 8082
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 8082
-            initialDelaySeconds: 5
-            periodSeconds: 10
-      serviceAccountName: argocd-application-controller
+  # resources:
+  #  requests:
+  #    memory: 256Mi
+  #    cpu: 100m
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  ## Additional deployment annotations
+  podAnnotations: {}
+
+portal:
+  image:
+    repository: goharbor/harbor-portal
+    tag: dev
+  # set the service account to be used, default if left empty
+  serviceAccountName: ""
+  replicas: 1
+  # resources:
+  #  requests:
+  #    memory: 256Mi
+  #    cpu: 100m
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  ## Additional deployment annotations
+  podAnnotations: {}
+
+core:
+  image:
+    repository: goharbor/harbor-core
+    tag: dev
+  # set the service account to be used, default if left empty
+  serviceAccountName: ""
+  replicas: 1
+  ## Startup probe values
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 10
+  # resources:
+  #  requests:
+  #    memory: 256Mi
+  #    cpu: 100m
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  ## Additional deployment annotations
+  podAnnotations: {}
+  # Secret is used when core server communicates with other components.
+  # If a secret key is not specified, Helm will generate one.
+  # Must be a string of 16 chars.
+  secret: ""
+  # Fill the name of a kubernetes secret if you want to use your own
+  # TLS certificate and private key for token encryption/decryption.
+  # The secret must contain keys named:
+  # "tls.crt" - the certificate
+  # "tls.key" - the private key
+  # The default key pair will be used if it isn't set
+  secretName: ""
+  # The XSRF key. Will be generated automatically if it isn't specified
+  xsrfKey: ""
+
+jobservice:
+  image:
+    repository: goharbor/harbor-jobservice
+    tag: dev
+  replicas: 1
+  # set the service account to be used, default if left empty
+  serviceAccountName: ""
+  maxJobWorkers: 10
+  # The logger for jobs: "file", "database" or "stdout"
+  jobLoggers:
+    - file
+    # - database
+    # - stdout
+
+  # resources:
+  #   requests:
+  #     memory: 256Mi
+  #     cpu: 100m
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  ## Additional deployment annotations
+  podAnnotations: {}
+  # Secret is used when job service communicates with other components.
+  # If a secret key is not specified, Helm will generate one.
+  # Must be a string of 16 chars.
+  secret: ""
+
+registry:
+  # set the service account to be used, default if left empty
+  serviceAccountName: ""
+  registry:
+    image:
+      repository: goharbor/registry-photon
+      tag: dev
+    # resources:
+    #  requests:
+    #    memory: 256Mi
+    #    cpu: 100m
+  controller:
+    image:
+      repository: goharbor/harbor-registryctl
+      tag: dev
+
+    # resources:
+    #  requests:
+    #    memory: 256Mi
+    #    cpu: 100m
+  replicas: 1
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  ## Additional deployment annotations
+  podAnnotations: {}
+  # Secret is used to secure the upload state from client
+  # and registry storage backend.
+  # See: https://github.com/docker/distribution/blob/master/docs/configuration.md#http
+  # If a secret key is not specified, Helm will generate one.
+  # Must be a string of 16 chars.
+  secret: ""
+  # If true, the registry returns relative URLs in Location headers. The client is responsible for resolving the correct URL.
+  relativeurls: false
+  credentials:
+    username: "harbor_registry_user"
+    password: "harbor_registry_password"
+    # If you update the username or password of registry, make sure use cli tool htpasswd to generate the bcrypt hash
+    # e.g. "htpasswd -nbBC10 $username $password"
+    htpasswd: "harbor_registry_user:$2y$10$9L4Tc0DJbFFMB6RdSCunrOpTHdwhid4ktBJmLD00bYgqkkGOvll3m"
+
+  middleware:
+    enabled: false
+    type: cloudFront
+    cloudFront:
+      baseurl: example.cloudfront.net
+      keypairid: KEYPAIRID
+      duration: 3000s
+      ipfilteredby: none
+      # The secret key that should be present is CLOUDFRONT_KEY_DATA, which should be the encoded private key
+      # that allows access to CloudFront
+      privateKeySecret: "my-secret"
+
+chartmuseum:
+  enabled: true
+  # set the service account to be used, default if left empty
+  serviceAccountName: ""
+  # Harbor defaults ChartMuseum to returning relative urls, if you want using absolute url you should enable it by change the following value to 'true'
+  absoluteUrl: false
+  image:
+    repository: goharbor/chartmuseum-photon
+    tag: dev
+  replicas: 1
+  # resources:
+  #  requests:
+  #    memory: 256Mi
+  #    cpu: 100m
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  ## Additional deployment annotations
+  podAnnotations: {}
+
+trivy:
+  # enabled the flag to enable Trivy scanner
+  enabled: true
+  image:
+    # repository the repository for Trivy adapter image
+    repository: goharbor/trivy-adapter-photon
+    # tag the tag for Trivy adapter image
+    tag: dev
+  # set the service account to be used, default if left empty
+  serviceAccountName: ""
+  # replicas the number of Pod replicas
+  replicas: 1
+  # debugMode the flag to enable Trivy debug mode with more verbose scanning log
+  debugMode: false
+  # vulnType a comma-separated list of vulnerability types. Possible values are `os` and `library`.
+  vulnType: "os,library"
+  # severity a comma-separated list of severities to be checked
+  severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
+  # ignoreUnfixed the flag to display only fixed vulnerabilities
+  ignoreUnfixed: false
+  # insecure the flag to skip verifying registry certificate
+  insecure: false
+  # gitHubToken the GitHub access token to download Trivy DB
+  #
+  # Trivy DB contains vulnerability information from NVD, Red Hat, and many other upstream vulnerability databases.
+  # It is downloaded by Trivy from the GitHub release page https://github.com/aquasecurity/trivy-db/releases and cached
+  # in the local file system (`/home/scanner/.cache/trivy/db/trivy.db`). In addition, the database contains the update
+  # timestamp so Trivy can detect whether it should download a newer version from the Internet or use the cached one.
+  # Currently, the database is updated every 12 hours and published as a new release to GitHub.
+  #
+  # Anonymous downloads from GitHub are subject to the limit of 60 requests per hour. Normally such rate limit is enough
+  # for production operations. If, for any reason, it's not enough, you could increase the rate limit to 5000
+  # requests per hour by specifying the GitHub access token. For more details on GitHub rate limiting please consult
+  # https://developer.github.com/v3/#rate-limiting
+  #
+  # You can create a GitHub token by following the instructions in
+  # https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
+  gitHubToken: ""
+  # skipUpdate the flag to disable Trivy DB downloads from GitHub
+  #
+  # You might want to set the value of this flag to `true` in test or CI/CD environments to avoid GitHub rate limiting issues.
+  # If the value is set to `true` you have to manually download the `trivy.db` file and mount it in the
+  # `/home/scanner/.cache/trivy/db/trivy.db` path.
+  skipUpdate: false
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  ## Additional deployment annotations
+  podAnnotations: {}
+
+notary:
+  enabled: true
+  server:
+    # set the service account to be used, default if left empty
+    serviceAccountName: ""
+    image:
+      repository: goharbor/notary-server-photon
+      tag: dev
+    replicas: 1
+    # resources:
+    #  requests:
+    #    memory: 256Mi
+    #    cpu: 100m
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    ## Additional deployment annotations
+    podAnnotations: {}
+  signer:
+    # set the service account to be used, default if left empty
+    serviceAccountName: ""
+    image:
+      repository: goharbor/notary-signer-photon
+      tag: dev
+    replicas: 1
+    # resources:
+    #  requests:
+    #    memory: 256Mi
+    #    cpu: 100m
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    ## Additional deployment annotations
+    podAnnotations: {}
+  # Fill the name of a kubernetes secret if you want to use your own
+  # TLS certificate authority, certificate and private key for notary
+  # communications.
+  # The secret must contain keys named ca.crt, tls.crt and tls.key that
+  # contain the CA, certificate and private key.
+  # They will be generated if not set.
+  secretName: ""
+
+database:
+  # if external database is used, set "type" to "external"
+  # and fill the connection informations in "external" section
+  type: internal
+  internal:
+    # set the service account to be used, default if left empty
+    serviceAccountName: ""
+    image:
+      repository: goharbor/harbor-db
+      tag: dev
+    # The initial superuser password for internal database
+    password: "changeit"
+    # resources:
+    #  requests:
+    #    memory: 256Mi
+    #    cpu: 100m
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  external:
+    host: "192.168.0.1"
+    port: "5432"
+    username: "user"
+    password: "password"
+    coreDatabase: "registry"
+    notaryServerDatabase: "notary_server"
+    notarySignerDatabase: "notary_signer"
+    # "disable" - No SSL
+    # "require" - Always SSL (skip verification)
+    # "verify-ca" - Always SSL (verify that the certificate presented by the
+    # server was signed by a trusted CA)
+    # "verify-full" - Always SSL (verify that the certification presented by the
+    # server was signed by a trusted CA and the server host name matches the one
+    # in the certificate)
+    sslmode: "disable"
+  # The maximum number of connections in the idle connection pool.
+  # If it <=0, no idle connections are retained.
+  maxIdleConns: 50
+  # The maximum number of open connections to the database.
+  # If it <= 0, then there is no limit on the number of open connections.
+  # Note: the default number of connections is 1024 for postgre of harbor.
+  maxOpenConns: 1000
+  ## Additional deployment annotations
+  podAnnotations: {}
+
+redis:
+  # if external Redis is used, set "type" to "external"
+  # and fill the connection informations in "external" section
+  type: internal
+  internal:
+    # set the service account to be used, default if left empty
+    serviceAccountName: ""
+    image:
+      repository: goharbor/redis-photon
+      tag: dev
+    # resources:
+    #  requests:
+    #    memory: 256Mi
+    #    cpu: 100m
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  external:
+    # support redis, redis+sentinel
+    # addr for redis: <host_redis>:<port_redis>
+    # addr for redis+sentinel: <host_sentinel1>:<port_sentinel1>,<host_sentinel2>:<port_sentinel2>,<host_sentinel3>:<port_sentinel3>
+    addr: "192.168.0.2:6379"
+    # The name of the set of Redis instances to monitor, it must be set to support redis+sentinel
+    sentinelMasterSet: ""
+    # The "coreDatabaseIndex" must be "0" as the library Harbor
+    # used doesn't support configuring it
+    coreDatabaseIndex: "0"
+    jobserviceDatabaseIndex: "1"
+    registryDatabaseIndex: "2"
+    chartmuseumDatabaseIndex: "3"
+    trivyAdapterIndex: "5"
+    password: ""
+  ## Additional deployment annotations
+  podAnnotations: {}
+
+exporter:
+  replicas: 1
+  # resources:
+  #  requests:
+  #    memory: 256Mi
+  #    cpu: 100m
+  podAnnotations: {}
+  serviceAccountName: ""
+  image:
+    repository: goharbor/harbor-exporter
+    tag: dev
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  cacheDuration: 30
+  cacheCleanInterval: 14400
+
+metrics:
+  enabled: false
+  core:
+    path: /metrics
+    port: 8001
+  registry:
+    path: /metrics
+    port: 8001
+  exporter:
+    path: /metrics
+    port: 8001
