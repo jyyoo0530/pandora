@@ -39,3 +39,4 @@ chmod +x /usr/local/bin/argocd
 # patch
 kubectl patch svc argocd-server -n clt-devops -p '{"spec": {"type": "NodePort"}}'
 # get password
+kubectl get pods -n clt-devops -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
