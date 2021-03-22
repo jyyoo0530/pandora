@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: clt-devops
+  name: kube-gateway
   labels:
     app: metallb
 ---
@@ -11,7 +11,7 @@ metadata:
   labels:
     app: metallb
   name: controller
-  namespace: clt-devops
+  namespace: kube-gateway
 spec:
   allowPrivilegeEscalation: false
   allowedCapabilities: []
@@ -53,7 +53,7 @@ metadata:
   labels:
     app: metallb
   name: speaker
-  namespace: clt-devops
+  namespace: kube-gateway
 spec:
   allowPrivilegeEscalation: false
   allowedCapabilities:
@@ -92,7 +92,7 @@ metadata:
   labels:
     app: metallb
   name: controller
-  namespace: clt-devops
+  namespace: kube-gateway
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -100,7 +100,7 @@ metadata:
   labels:
     app: metallb
   name: speaker
-  namespace: clt-devops
+  namespace: kube-gateway
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -179,7 +179,7 @@ metadata:
   labels:
     app: metallb
   name: config-watcher
-  namespace: clt-devops
+  namespace: kube-gateway
 rules:
   - apiGroups:
       - ''
@@ -196,7 +196,7 @@ metadata:
   labels:
     app: metallb
   name: pod-lister
-  namespace: clt-devops
+  namespace: kube-gateway
 rules:
   - apiGroups:
       - ''
@@ -218,7 +218,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: controller
-    namespace: clt-devops
+    namespace: kube-gateway
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -233,7 +233,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: speaker
-    namespace: clt-devops
+    namespace: kube-gateway
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -241,7 +241,7 @@ metadata:
   labels:
     app: metallb
   name: config-watcher
-  namespace: clt-devops
+  namespace: kube-gateway
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -258,7 +258,7 @@ metadata:
   labels:
     app: metallb
   name: pod-lister
-  namespace: clt-devops
+  namespace: kube-gateway
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -274,7 +274,7 @@ metadata:
     app: metallb
     component: speaker
   name: speaker
-  namespace: clt-devops
+  namespace: kube-gateway
 spec:
   selector:
     matchLabels:
@@ -356,7 +356,7 @@ metadata:
     app: metallb
     component: controller
   name: controller
-  namespace: clt-devops
+  namespace: kube-gateway
 spec:
   revisionHistoryLimit: 3
   selector:
