@@ -1,10 +1,6 @@
-kubectl edit configmap -n kube-system kube-proxy
-
-kubectl get configmap kube-proxy -n kube-system -o yaml | \
-sed -e "s/strictARP: false/strictARP: true/" | \
-kubectl diff -f - -n kube-system
+kubctl create namespace kube-gateway
 
 # On first install only
-kubectl create secret generic -n clt-devops memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+kubectl create secret generic -n kube-gateway memberlist --from-literal=secretkey="$(openssl rand -base64 128)" --create-namespace
 
 # add app on ArgoCD
