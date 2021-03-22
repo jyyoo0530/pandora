@@ -273,7 +273,7 @@ metadata:
   name: ingress-nginx-controller
   namespace: clt-devops
 spec:
-  type: Ingress
+  type: NodePort
   ports:
     - name: http
       port: 80
