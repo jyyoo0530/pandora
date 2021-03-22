@@ -5,45 +5,45 @@ metadata:
   name: config
 data:
   config: |
-#    # The peers section tells MetalLB what BGP routers to connect too. There
-#    # is one entry for each router you want to peer with.
-#    peers:
-#    - # The target IP address for the BGP session.
-#      peer-address: 10.0.0.1
-#      # The BGP AS number that MetalLB expects to see advertised by
-#      # the router.
-#      peer-asn: 64512
-#      # The BGP AS number that MetalLB should speak as.
-#      my-asn: 64512
-#      # (optional) the TCP port to talk to. Defaults to 179, you shouldn't
-#      # need to set this in production.
-#      peer-port: 179
-#      # (optional) The proposed value of the BGP Hold Time timer. Refer to
-#      # BGP reference material to understand what setting this implies.
-#      hold-time: 120s
-#      # (optional) The router ID to use when connecting to this peer. Defaults
-#      # to the node IP address. Generally only useful when you need to peer with
-#      # another BGP router running on the same machine as MetalLB.
-#      router-id: 1.2.3.4
-#      # (optional) Password for TCPMD5 authenticated BGP sessions
-#      # offered by some peers.
-#      password: "yourPassword"
-#      # (optional) The nodes that should connect to this peer. A node
-#      # matches if at least one of the node selectors matches. Within
-#      # one selector, a node matches if all the matchers are
-#      # satisfied. The semantics of each selector are the same as the
-#      # label- and set-based selectors in Kubernetes, documented at
-#      # https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/.
-#      # By default, all nodes are selected.
-#      node-selectors:
-#      - # Match by label=value
-#        match-labels:
-#          kubernetes.io/hostname: prod-01
-#        # Match by 'key OP values' expressions
-#        match-expressions:
-#        - key: beta.kubernetes.io/arch
-#          operator: In
-#          values: [amd64, arm]
+    # The peers section tells MetalLB what BGP routers to connect too. There
+    # is one entry for each router you want to peer with.
+    peers:
+    - # The target IP address for the BGP session.
+      peer-address: 10.0.0.1
+      # The BGP AS number that MetalLB expects to see advertised by
+      # the router.
+      peer-asn: 64512
+      # The BGP AS number that MetalLB should speak as.
+      my-asn: 64512
+      # (optional) the TCP port to talk to. Defaults to 179, you shouldn't
+      # need to set this in production.
+      peer-port: 179
+      # (optional) The proposed value of the BGP Hold Time timer. Refer to
+      # BGP reference material to understand what setting this implies.
+      hold-time: 120s
+      # (optional) The router ID to use when connecting to this peer. Defaults
+      # to the node IP address. Generally only useful when you need to peer with
+      # another BGP router running on the same machine as MetalLB.
+      router-id: 1.2.3.4
+      # (optional) Password for TCPMD5 authenticated BGP sessions
+      # offered by some peers.
+      password: "yourPassword"
+      # (optional) The nodes that should connect to this peer. A node
+      # matches if at least one of the node selectors matches. Within
+      # one selector, a node matches if all the matchers are
+      # satisfied. The semantics of each selector are the same as the
+      # label- and set-based selectors in Kubernetes, documented at
+      # https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/.
+      # By default, all nodes are selected.
+      node-selectors:
+      - # Match by label=value
+        match-labels:
+          kubernetes.io/hostname: prod-01
+        # Match by 'key OP values' expressions
+        match-expressions:
+        - key: beta.kubernetes.io/arch
+          operator: In
+          values: [amd64, arm]
 
     # The address-pools section lists the IP addresses that MetalLB is
     # allowed to allocate, along with settings for how to advertise
