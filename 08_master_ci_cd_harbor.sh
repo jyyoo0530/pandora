@@ -216,17 +216,36 @@ mkdir -p /data/harbor-trivy
 chmod 777 /data/harbor-trivy
 exit
 
+# install cert-manager
+wget -O $HARBOR/certmanager-crds.yaml https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.crds.yaml
+kubectl apply -f $HARBOR/certmanager-crds.yaml -n clt-devops
+kubectl label namespace clt-devops certmanager.k8s.io/disable-validation=true
+helm repo add jetstack https://charts.jetstack.io
+helm install cert-manager --namespace clt-devops jetstack/cert-manager
+
+#export MY_DOMAIN=${MY_DOMAIN:-mylabs.dev}
+#export LETSENCRYPT_ENVIRONMENT=${LETSENCRYPT_ENVIRONMENT:-staging}
+#echo "${MY_DOMAIN} | ${LETSENCRYPT_ENVIRONMENT}"
+
+kubectl create secret tls tls-cert --key /data/cert/30.0.2.30.key --cert /data/cert/30.0.2.30.crt -n kube-system
+
+# install kubed
+helm repo add appscode https://charts.appscode.com/stable/
+helm install kubed appscode/kubed \
+  --version v0.12.0 \
+  --namespace kube-system \
+  --set config.clusterName=pandora_cluster \
+  --set apiserver.enabled=false
+kubectl annotate secret ingress-cert-${LETSENCRYPT_ENVIRONMENT} -n clt-devops kubed.appscode.com/sync="app=kubed"
+
 # run app
 helm install harbor harbor/harbor -n clt-devops \
 --set \
-expose.type=nodePort,\
-expose.tls.enabled=false,\
-expose.ingress.annotations=,\
-expose.nodePort.ports.http.port=80,\
-expose.nodePort.ports.http.nodePort=30003,\
-expose.nodePort.ports.https.port=443,\
-expose.nodePort.ports.https.port=30004,\
-notary.enabled=false,\
+expose.type=ingress,\
+expose.tls.secret.secretName=default-server-secret,\
+expose.ingress.hosts.core=core.harbor.domain,\
+expose.ingress.hosts.notary=notary.harbor.domain,\
+externalURL=30.0.2.30,\
 persistence.enabled=true,\
 persistence.resourcePolicy=keep,\
 persistence.persistentVolumeClaim.registry.storageClass=harbor-registry-sc,\
@@ -247,11 +266,10 @@ persistence.persistentVolumeClaim.redis.size=5Gi,\
 persistence.persistentVolumeClaim.trivy.storageClass=harbor-trivy-sc,\
 persistence.persistentVolumeClaim.trivy.accessMode=ReadWriteOnce,\
 persistence.persistentVolumeClaim.trivy.size=5Gi,\
-externalURL=https://core.harbor.domain,\
 metrics.enabled=true,\
 metrics.core.path=/metrics,\
 metrics.core.port=8001,\
 metrics.registry.path=/metrics,\
 metrics.registry.port=8001,\
 metrics.exporter.path=/metrics,\
-metrics.exporter.port=8001,\
+metrics.exporter.port=8001
