@@ -245,7 +245,6 @@ expose.type=ingress,\
 expose.tls.secret.secretName=default-server-secret,\
 expose.ingress.hosts.core=core.harbor.domain,\
 expose.ingress.hosts.notary=notary.harbor.domain,\
-externalURL=30.0.2.30,\
 persistence.enabled=true,\
 persistence.resourcePolicy=keep,\
 persistence.persistentVolumeClaim.registry.storageClass=harbor-registry-sc,\

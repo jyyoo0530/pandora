@@ -147,17 +147,15 @@ metadata:
   labels:
     app: jenkins-leader
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - port: 80
     targetPort: 8080
     protocol: TCP
     name: http
-    nodePort: 30000
   - port: 50000
     protocol: TCP
     name: slave
-    nodePort: 30001
   selector:
     app: jenkins-leader
 ---
