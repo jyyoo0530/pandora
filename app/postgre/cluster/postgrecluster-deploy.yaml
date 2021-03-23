@@ -1,8 +1,8 @@
 apiVersion: "acid.zalan.do/v1"
 kind: postgresql
 metadata:
-  name: postgre-cluster
-  namespace: clt-devops
+  name: acid-minimal-cluster
+  namespace: default
 spec:
   teamId: "acid"
   volume:
@@ -10,12 +10,12 @@ spec:
     storageClass: postgre-sc
   numberOfInstances: 2
   users:
-    harbor:  # database owner
+    zalando:  # database owner
       - superuser
       - createdb
     foo_user: []  # role for application foo
   databases:
-    foo: harbor  # dbname: owner
+    foo: zalando  # dbname: owner
   preparedDatabases:
     bar: {}
   postgresql:
