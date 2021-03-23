@@ -7,6 +7,7 @@ spec:
   teamId: "acid"
   volume:
     size: 1Gi
+    storageClass: postgre-sc
   numberOfInstances: 2
   users:
     harbor:  # database owner
