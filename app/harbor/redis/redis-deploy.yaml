@@ -6,7 +6,7 @@ metadata:
   name: harbor-redis-config
 data:
   redis-config:  |
-    maxmemory 20mb
+    maxmemory 20mb,
     maxmemory-policy allkeys-lr
 ---
 apiVersion: v1
