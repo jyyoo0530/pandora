@@ -13077,7 +13077,7 @@ spec:
     - webhook-service.kube-repo.svc.cluster.local
   issuerRef:
     kind: ClusterIssuer
-    name: letsencrypt-staging
+    name: ca-issuer
   secretName: webhook-server-cert
 ---
 apiVersion: cert-manager.io/v1
