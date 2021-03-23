@@ -3709,7 +3709,7 @@ spec:
           name: Failure
           priority: 5
           type: string
-      name: v1alpha3
+      name: v1alpha1
       schema:
         openAPIV3Schema:
           description: Harbor is the Schema for the harbors API.
