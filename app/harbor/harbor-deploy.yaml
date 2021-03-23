@@ -13069,7 +13069,7 @@ metadata:
     goharbor.io/deploy-engine: Kustomization
     goharbor.io/deploy-mode: harbor
     goharbor.io/operator-version: v1.0.0
-  name: serving-cert
+  name: webhook-serving-cert
   namespace: kube-repo
 spec:
   dnsNames:
@@ -13078,7 +13078,7 @@ spec:
   issuerRef:
     kind: ClusterIssuer
     name: ca-issuer
-  secretName: webhook-server-cert
+  secretName: ca-key-pair
 ---
 apiVersion: cert-manager.io/v1
 kind: Issuer
