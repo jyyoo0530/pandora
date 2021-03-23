@@ -21,10 +21,10 @@ exit
 
 # install cert-manager
 wget -O $HARBOR/certmanager-crds.yaml https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.crds.yaml
-kubectl apply -f $HARBOR/certmanager-crds.yaml -n clt-devops
-kubectl label namespace clt-devops certmanager.k8s.io/disable-validation=true
+kubectl apply -f $HARBOR/certmanager-crds.yaml -n kube-repo
+kubectl label namespace kube-repo certmanager.k8s.io/disable-validation=true
 helm repo add jetstack https://charts.jetstack.io
-helm install cert-manager --namespace clt-devops jetstack/cert-manager
+helm install cert-manager --namespace kube-repo jetstack/cert-manager
 
 #export MY_DOMAIN=${MY_DOMAIN:-mylabs.dev}
 #export LETSENCRYPT_ENVIRONMENT=${LETSENCRYPT_ENVIRONMENT:-staging}
@@ -42,12 +42,17 @@ helm install kubed appscode/kubed \
 kubectl annotate secret ingress-cert-${LETSENCRYPT_ENVIRONMENT} -n clt-devops kubed.appscode.com/sync="app=kubed"
 
 # run app
-helm install harbor harbor/harbor -n clt-devops \
+helm install harbor harbor/harbor -n kube-repo \
 --set \
 expose.type=ingress,\
+expose.tls.enabled=true,\
+expose.tls.certSource=auto,\
+expose.tls.auto.commonName=harbor-operator,\
 expose.tls.secret.secretName=default-server-secret,\
 expose.ingress.hosts.core=core.harbor.domain,\
 expose.ingress.hosts.notary=notary.harbor.domain,\
+expose.ingress.controller=default,\
+harborAdminPassword=admin,\
 persistence.enabled=true,\
 persistence.resourcePolicy=keep,\
 persistence.persistentVolumeClaim.registry.storageClass=harbor-registry-sc,\
