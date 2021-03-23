@@ -82,3 +82,18 @@ metrics.registry.path=/metrics,\
 metrics.registry.port=8001,\
 metrics.exporter.path=/metrics,\
 metrics.exporter.port=8001
+
+
+
+kubectl delete crd chartmuseums.goharbor.io &&
+kubectl delete crd cores.goharbor.io &&
+kubectl delete crd harborclusters.goharbor.io &&
+kubectl delete crd harbors.goharbor.io &&
+kubectl delete crd jobservices.goharbor.io &&
+kubectl delete crd notaryservers.goharbor.io &&
+kubectl delete crd notarysigners.goharbor.io &&
+kubectl delete crd portals.goharbor.io &&
+kubectl delete crd registries.goharbor.io &&
+kubectl delete crd registrycontrollers.goharbor.io &&
+kubectl delete crd trivies.goharbor.io &&
+kubectl delete crd tenants.minio.min.io
