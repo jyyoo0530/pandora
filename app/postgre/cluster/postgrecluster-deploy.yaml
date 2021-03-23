@@ -43,7 +43,7 @@ spec:
       log_statement: "all"
   volume:
     size: 1Gi
-      storageClass: postgre-sc
+    storageClass: postgre-sc
   #    iops: 1000  # for EBS gp3
   #    throughput: 250  # in MB/s for EBS gp3
 #  additionalVolumes:
