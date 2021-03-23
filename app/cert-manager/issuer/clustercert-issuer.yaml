@@ -14,13 +14,13 @@
 apiVersion: certmanager.k8s.io/v1alpha3
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt
+  name: letsencrypt-prod
 spec:
   acme:
     email: jyyoo0530@gmail.com
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: default-server-key
+      name: letsencrypt-prod
     solvers:
       - http01:
           ingress:
