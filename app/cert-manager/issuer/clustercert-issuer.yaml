@@ -20,7 +20,7 @@ spec:
     email: jyyoo0530@gmail.com
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: default-token-kr64t
+      name: default-server-key
     solvers:
       - http01:
           ingress:
