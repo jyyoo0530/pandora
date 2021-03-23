@@ -720,6 +720,16 @@ metadata:
 spec:
   selfSigned: {}
 ---
+apiVersion: cert-manager.io/v1alpha3
+kind: Issuer
+metadata:
+  name: harbor-operator-selfsigned-issuer
+  namespace: kube-repo
+spec:
+  selfSigned: {}
+  ca:
+    secretName: ca-key-pair
+---
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingWebhookConfiguration
 metadata:
