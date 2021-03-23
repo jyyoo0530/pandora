@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-apiVersion: certmanager.k8s.io/v1alpha3
+apiVersion: certmanager.k8s.io/v1alpha2
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-prod
+  name: letsencrypt-staging
 spec:
   acme:
     email: jyyoo0530@gmail.com
@@ -22,7 +22,23 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
-      - http01:
+      - selector: {}
+        http01:
           ingress:
             class: nginx
----
+#---
+#apiVersion: certmanager.k8s.io/v1alpha2
+#kind: ClusterIssuer
+#metadata:
+#  name: letsencrypt-prod
+#spec:
+#  acme:
+#    email: jyyoo0530@gmail.com
+#    server: https://acme-staging-v02.api.letsencrypt.org/directory
+#    privateKeySecretRef:
+#      name: letsencrypt-prod
+#    solvers:
+#      - http01:
+#          ingress:
+#            class: nginx
+#---
