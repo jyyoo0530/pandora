@@ -135,7 +135,7 @@ metadata:
   name: harbor-operator
   namespace: kube-repo
 spec:
-  replicase: 1
+  replicas: 1
   selector:
     matchLabels:
       control-plane: harbor-operator
