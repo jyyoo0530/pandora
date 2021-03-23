@@ -16,6 +16,13 @@ kind: ClusterIssuer
 metadata:
   name: letsencrypt
 spec:
-  ca:
-    secretName: ca-key-pair
+  acme:
+    email: jyyoo0530@gmail.com
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: default-token-kr64t
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
 ---
