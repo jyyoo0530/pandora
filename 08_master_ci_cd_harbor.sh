@@ -46,12 +46,14 @@ helm install harbor harbor/harbor -n kube-repo \
 --set \
 expose.type=ingress,\
 expose.tls.enabled=true,\
-expose.tls.certSource=auto,\
+expose.tls.certSource=secret,\
 expose.tls.auto.commonName=harbor-operator,\
 expose.tls.secret.secretName=default-server-secret,\
+expose.tls.secret.notarySecretName=default-server-secret,\
 expose.ingress.hosts.core=core.harbor.domain,\
 expose.ingress.hosts.notary=notary.harbor.domain,\
 expose.ingress.controller=default,\
+expose.ingress.annotations=,\
 harborAdminPassword=admin,\
 persistence.enabled=true,\
 persistence.resourcePolicy=keep,\
