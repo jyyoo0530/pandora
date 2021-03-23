@@ -135,6 +135,7 @@ metadata:
   name: harbor-operator
   namespace: kube-repo
 spec:
+  replicase: 1
   selector:
     matchLabels:
       control-plane: harbor-operator
@@ -159,12 +160,6 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
           image: goharbor/harbor-operator:dev_develop
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: ready
-            initialDelaySeconds: 2
-            periodSeconds: 2
           name: manager
           ports:
             - containerPort: 9443
@@ -176,12 +171,6 @@ spec:
             - containerPort: 5000
               name: ready
               protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /readyz
-              port: ready
-            initialDelaySeconds: 2
-            periodSeconds: 2
           resources:
             limits:
               cpu: 2
