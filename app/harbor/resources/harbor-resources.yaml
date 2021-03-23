@@ -14535,7 +14535,6 @@ spec:
   issuerRef:
     kind: ClusterIssuer
     name: ca-issuer
-    namespace: kube-security
   secretName: webhook-server-cert
 ---
 apiVersion: admissionregistration.k8s.io/v1
