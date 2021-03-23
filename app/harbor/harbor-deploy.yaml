@@ -160,6 +160,10 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
           image: goharbor/harbor-operator:dev_develop
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: ready
           name: manager
           ports:
             - containerPort: 9443
@@ -171,6 +175,10 @@ spec:
             - containerPort: 5000
               name: ready
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: ready
           resources:
             limits:
               cpu: 2
