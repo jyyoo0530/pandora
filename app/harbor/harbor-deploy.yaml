@@ -4,8 +4,132 @@ kind: Deployment
 metadata:
   annotations:
     goharbor.io/deploy-engine: Kustomization
-    goharbor.io/deploy-mode: harbor
+    goharbor.io/deploy-mode: cluster
     goharbor.io/operator-version: v1.0.0
+  name: minio-operator
+  namespace: kube-repo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: minio-operator
+  template:
+    metadata:
+      annotations:
+        goharbor.io/deploy-engine: Kustomization
+        goharbor.io/deploy-mode: cluster
+        goharbor.io/operator-version: v1.0.0
+      labels:
+        name: minio-operator
+    spec:
+      containers:
+        - image: minio/k8s-operator:v3.0.13
+          imagePullPolicy: IfNotPresent
+          name: minio-operator
+          resources:
+            requests:
+              memory: 256Mi
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+      serviceAccountName: minio-operator
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    goharbor.io/deploy-engine: Kustomization
+    goharbor.io/deploy-mode: cluster
+    goharbor.io/operator-version: v1.0.0
+  labels:
+    app: redisoperator
+  name: redisoperator
+  namespace: kube-repo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redisoperator
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        goharbor.io/deploy-engine: Kustomization
+        goharbor.io/deploy-mode: cluster
+        goharbor.io/operator-version: v1.0.0
+      labels:
+        app: redisoperator
+    spec:
+      containers:
+        - image: quay.io/spotahome/redis-operator:v1.0.0
+          imagePullPolicy: IfNotPresent
+          name: app
+          resources:
+            limits:
+              cpu: 100m
+              memory: 50Mi
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+      restartPolicy: Always
+      serviceAccountName: redisoperator
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    goharbor.io/deploy-engine: Kustomization
+    goharbor.io/deploy-mode: cluster
+    goharbor.io/operator-version: v1.0.0
+  name: postgres-operator
+  namespace: kube-repo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: postgres-operator
+  template:
+    metadata:
+      annotations:
+        goharbor.io/deploy-engine: Kustomization
+        goharbor.io/deploy-mode: cluster
+        goharbor.io/operator-version: v1.0.0
+      labels:
+        name: postgres-operator
+    spec:
+      containers:
+        - env:
+            - name: CONFIG_MAP_NAME
+              value: postgres-operator
+          image: registry.opensource.zalan.do/acid/postgres-operator:v1.5.0
+          imagePullPolicy: IfNotPresent
+          name: postgres-operator
+          resources:
+            limits:
+              cpu: 500m
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 250Mi
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+      serviceAccountName: postgres-operator
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    cache.goharbor.io/version: v1.0.0
+    database.goharbor.io/version: v1.5.0
+    storage.goharbor.io/version: v3.0.13
   labels:
     control-plane: harbor-operator
   name: harbor-operator
@@ -18,7 +142,7 @@ spec:
     metadata:
       annotations:
         goharbor.io/deploy-engine: Kustomization
-        goharbor.io/deploy-mode: harbor
+        goharbor.io/deploy-mode: cluster
         goharbor.io/operator-version: v1.0.0
       labels:
         control-plane: harbor-operator
@@ -30,39 +154,15 @@ spec:
           command:
             - /manager
           env:
-            - name: CORE_DOCKER_IMAGE
-              value: quay.io/goharbor/harbor-core:v2.1.2
-            - name: JOBSERVICE_DOCKER_IMAGE
-              value: quay.io/goharbor/harbor-jobservice:v2.1.2
-            - name: PORTAL_DOCKER_IMAGE
-              value: quay.io/goharbor/harbor-portal:v2.1.2
-            - name: REGISTRYCTL_DOCKER_IMAGE
-              value: quay.io/goharbor/harbor-registryctl:v2.1.2
-            - name: REGISTRY_DOCKER_IMAGE
-              value: quay.io/goharbor/registry-photon:v2.1.2
-            - name: CHARTMUSEUM_DOCKER_IMAGE
-              value: quay.io/goharbor/chartmuseum-photon:v2.1.2
-            - name: NOTARYSERVER_DOCKER_IMAGE
-              value: quay.io/goharbor/notary-server-photon:v2.1.2
-            - name: NOTARYSIGNER_DOCKER_IMAGE
-              value: quay.io/goharbor/notary-signer-photon:v2.1.2
-            - name: TRIVY_DOCKER_IMAGE
-              value: quay.io/goharbor/trivy-adapter-photon:v2.1.2
-            - name: HARBORCLUSTER_STORAGE_IMAGE
-              value: quay.io/goharbor/minio:RELEASE.2020-08-13T02-39-50Z
-            - name: HARBORCLUSTER_CACHE_IMAGE
-              value: quay.io/goharbor/redis:5.0-alpine
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          image: goharbor/harbor-operator:latest
+          image: goharbor/harbor-operator:dev_develop
           livenessProbe:
             httpGet:
               path: /healthz
               port: ready
-            initialDelaySeconds: 2
-            periodSeconds: 2
           name: manager
           ports:
             - containerPort: 9443
@@ -78,8 +178,6 @@ spec:
             httpGet:
               path: /readyz
               port: ready
-            initialDelaySeconds: 2
-            periodSeconds: 2
           resources:
             limits:
               cpu: 500m
@@ -107,4 +205,44 @@ spec:
         - configMap:
             name: config-template
           name: configuration-templates
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    goharbor.io/deploy-engine: Kustomization
+    goharbor.io/deploy-mode: cluster
+    goharbor.io/operator-version: v1.0.0
+  name: postgres-operator
+  namespace: kube-repo
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    name: postgres-operator
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    goharbor.io/deploy-engine: Kustomization
+    goharbor.io/deploy-mode: cluster
+    goharbor.io/operator-version: v1.0.0
+  labels:
+    name: minio-operator
+  name: operator
+  namespace: kube-repo
+spec:
+  ports:
+    - name: http
+      port: 4222
+    - name: https
+      port: 4233
+  selector:
+    name: minio-operator
+  type: ClusterIP
 ---
