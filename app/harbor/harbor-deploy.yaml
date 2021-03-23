@@ -163,6 +163,8 @@ spec:
             httpGet:
               path: /healthz
               port: ready
+            initialDelaySeconds: 2
+            periodSeconds: 2
           name: manager
           ports:
             - containerPort: 9443
@@ -178,6 +180,8 @@ spec:
             httpGet:
               path: /readyz
               port: ready
+            initialDelaySeconds: 2
+            periodSeconds: 2
           resources:
             limits:
               cpu: 500m
