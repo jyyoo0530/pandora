@@ -2,7 +2,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    cert-manager.io/inject-ca-from: kube-security/certmanager-cert-manager
+    cert-manager.io/inject-ca-from: kube-repo/harbor-operator-serving-cert
     controller-gen.kubebuilder.io/version: v0.2.4
   name: harbors.goharbor.io
 spec:
@@ -696,14 +696,35 @@ spec:
         - name: cert
           secret:
             defaultMode: 420
-            secretName: default-server-secret
-
+            secretName: webhook-server-cert
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: harbor-operator-serving-cert
+  namespace: kube-repo
+spec:
+  dnsNames:
+    - harbor-operator-webhook-service.kube-repo.svc
+    - harbor-operator-webhook-service.kube-repo.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: harbor-operator-selfsigned-issuer
+  secretName: webhook-server-cert
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: harbor-operator-selfsigned-issuer
+  namespace: kube-repo
+spec:
+  selfSigned: {}
 ---
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingWebhookConfiguration
 metadata:
   annotations:
-    cert-manager.io/inject-ca-from: kube-security/certmanager-cert-manager
+    cert-manager.io/inject-ca-from: kube-repo/harbor-operator-serving-cert
   name: harbor-operator-mutating-webhook-configuration
 webhooks:
   - clientConfig:
